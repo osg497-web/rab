@@ -24,7 +24,6 @@ export const holoBrainFragment = /* glsl */ `
   uniform vec3 keyColor;
   uniform vec3 rimDir;
   uniform vec3 rimColor;
-  uniform float time;
   uniform float opacity;
 
   varying vec3 vNormal;
@@ -41,30 +40,30 @@ export const holoBrainFragment = /* glsl */ `
     if (!gl_FrontFacing) N = -N;
     vec3 V = normalize(vViewDir);
 
-    // key + rim lighting — this is what actually makes gyri pop and sulci go dark
+    // key + rim lighting, fixed — this is what makes gyri pop and sulci go dark.
+    // nothing here depends on time, so the base brain never pulses or flickers.
     float diffuseKey = max(dot(N, keyDir), 0.0);
     diffuseKey = pow(diffuseKey, 1.4);
     float diffuseRim = max(dot(N, rimDir), 0.0);
 
-    // sharp fresnel — cyan only right at the grazing edge
     float fresnel = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.8);
 
-    // horizontal scan bands baked directly onto the surface (world space, so they don't swim when it rotates)
-    float scan = sin(vWorldPos.y * 160.0 + time * 2.0);
+    // static horizontal scan bands baked onto the surface — a fixed pattern, not animated
+    float scan = sin(vWorldPos.y * 160.0);
     scan = smoothstep(0.15, 0.9, scan);
 
-    // fast per-pixel grain — reads as CRT static / phosphor grain, not a smooth 3D gradient
-    float n = random(vUv * 500.0 + floor(time * 24.0));
+    // static per-pixel grain, tied only to UV so it doesn't shimmer over time
+    float n = random(vUv * 500.0);
 
     vec3 color =
       baseColor * (0.16 + diffuseKey * 0.62 + diffuseRim * 0.22) +
       keyColor * diffuseKey * 0.12 +
-      rimColor * fresnel * 1.05 +
-      glowColor * scan * 0.20 +
-      vec3(n) * 0.09;
+      rimColor * fresnel * 0.55 +
+      glowColor * scan * 0.10 +
+      vec3(n) * 0.045;
 
     // gentle posterize — keeps it from reading as a smooth modern gradient render
-    color = mix(color, floor(color * 9.0) / 9.0, 0.35);
+    color = mix(color, floor(color * 9.0) / 9.0, 0.30);
 
     gl_FragColor = vec4(color, opacity);
   }

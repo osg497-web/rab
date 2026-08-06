@@ -28,7 +28,7 @@ export async function initScene({ canvas, loadingEl }) {
   const fillLight = new THREE.AmbientLight(0x16324a, 0.35);
   scene.add(keyLight, rimLight, fillLight);
 
-  const { composer, setSize, update: updateComposer } = createComposer(renderer, scene, camera);
+  const { render: renderComposer, setSize, update: updateComposer } = createComposer(renderer, scene, camera);
 
   const brain = await createBrain(scene, {
     onProgress: (p) => {
@@ -93,7 +93,7 @@ export async function initScene({ canvas, loadingEl }) {
 
     brain.update(dt, t);
     updateComposer(dt, t);
-    composer.render();
+    renderComposer();
 
     requestAnimationFrame(animate);
   }
