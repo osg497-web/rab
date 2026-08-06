@@ -8,6 +8,8 @@ export async function initScene({ canvas, loadingEl }) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.setClearColor(0x000000, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.7;
 
   const scene = new THREE.Scene();
 
@@ -19,8 +21,13 @@ export async function initScene({ canvas, loadingEl }) {
   );
   camera.position.set(0, 0, 7.4);
 
-  // minimal lighting — the holo shader is mostly self-illuminating via fresnel
-  scene.add(new THREE.AmbientLight(0x1a2a44, 0.5));
+  // key + rim + fill — no single light washes the whole surface flat
+  const keyLight = new THREE.DirectionalLight(0x8cecff, 1.3);
+  keyLight.position.set(3, 2, 4);
+  const rimLight = new THREE.DirectionalLight(0x00bfff, 1.6);
+  rimLight.position.set(-4, 1, -3);
+  const fillLight = new THREE.AmbientLight(0x16324a, 0.35);
+  scene.add(keyLight, rimLight, fillLight);
 
   const { composer, setSize, update: updateComposer } = createComposer(renderer, scene, camera);
 
