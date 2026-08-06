@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>디자인 연구실</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ background:#020304; color:#EAF6FF; }
+  body{ font-family:'Galmuri9', monospace; }
+
+  .hero{ position:relative; width:100%; height:100vh; overflow:hidden; }
+  canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:12px; letter-spacing:0.12em; color:rgba(180,220,255,0.55); z-index:5;
+  }
+
+  .stage{
+    position:absolute; inset:0; z-index:4; pointer-events:none;
+    padding:44px 52px; display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .stage a{ pointer-events:auto; }
+
+  header{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .brand{ display:flex; flex-direction:column; gap:10px; max-width:420px; }
+
+  .brand h1{
+    font-family:'Galmuri14','Galmuri11',monospace;
+    font-size:44px; font-weight:700; color:#EAF6FF;
+    text-shadow:0 0 26px rgba(111,227,255,0.4);
+  }
+  .subtitle{ font-size:13px; line-height:1.65; color:rgba(200,230,255,0.55); max-width:340px; }
+
+  nav{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  nav a{
+    text-decoration:none; color:rgba(200,230,255,0.55); font-size:13px; padding:6px 0;
+    position:relative; transition:color .3s ease;
+  }
+  nav a::after{
+    content:''; position:absolute; right:0; bottom:2px; height:1px; width:0%;
+    background:#6fe3ff; transition:width .3s ease;
+  }
+  nav a:hover{ color:#EAF6FF; }
+  nav a:hover::after{ width:100%; }
+
+  .scrollHint{
+    align-self:center; font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.4);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    animation:hintFloat 2.4s ease-in-out infinite;
+  }
+  .scrollHint .bar{ width:1px; height:26px; background:linear-gradient(to bottom, rgba(111,227,255,0.7), transparent); }
+  @keyframes hintFloat{ 0%,100%{ transform:translateY(0); opacity:.7; } 50%{ transform:translateY(6px); opacity:1; } }
+
+  .next-section{
+    min-height:140vh;
+    background:linear-gradient(to bottom, #020304, #050710);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:rgba(200,230,255,0.35); letter-spacing:0.1em;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <canvas id="brainCanvas"></canvas>
+  <div class="loading" id="loadingEl">LOADING BRAIN — 0%</div>
+
+  <div class="stage">
+    <header>
+      <div class="brand">
+        <h1>디자인 연구실</h1>
+        <p class="subtitle">디자인 연구실은 내가 멋대로 제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야. 보는건 자유인데 나를 판단하는건 금물이야</p>
+      </div>
+      <nav>
+        <a href="#">대화하기</a>
+        <a href="#">스킬</a>
+        <a href="#">디자인</a>
+        <a href="#">etc</a>
+      </nav>
+    </header>
+
+    <div class="scrollHint">
+      <span>SCROLL</span>
+      <span class="bar"></span>
+    </div>
+  </div>
+</div>
+
+<div class="next-section">이 아래로는 실제 포트폴리오 섹션이 이어지는 자리예요 — 스크롤하면 뇌가 그에 맞춰 천천히 회전해요</div>
+
+<script>
+  // safety net: if nothing has progressed past 0% after a few seconds,
+  // the module script itself likely failed to load (wrong path, or opened via
+  // file:// without a local server) — surface a clear message instead of a silent stall.
+  setTimeout(() => {
+    const el = document.getElementById('loadingEl');
+    if (el && el.textContent.includes('0%')) {
+      el.innerHTML = '모델이 로드되지 않았어요.<br>이 파일을 file://로 직접 열었다면 로컬 서버(또는 GitHub Pages)로 열어주세요.<br>콘솔(F12)에서 빨간 에러 메시지를 확인해주시면 정확한 원인을 알 수 있어요.';
+      el.style.lineHeight = '1.8';
+      el.style.textAlign = 'center';
+    }
+  }, 4000);
+
+  window.addEventListener('error', (e) => {
+    const el = document.getElementById('loadingEl');
+    if (el) el.innerHTML = `스크립트 에러: ${e.message || '알 수 없는 오류'}<br>콘솔(F12)을 확인해주세요.`;
+  });
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+  import { initScene } from './scene.js';
+
+  initScene({
+    canvas: document.getElementById('brainCanvas'),
+    loadingEl: document.getElementById('loadingEl'),
+  }).catch((err) => {
+    console.error(err);
+    const el = document.getElementById('loadingEl');
+    if (el) el.textContent = '모델을 불러오지 못했어요 — 콘솔을 확인해주세요.';
+  });
+</script>
+</body>
+</html>
