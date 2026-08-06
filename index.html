@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
-  html,body{ background:#020304; color:#EAF6FF; height:100%; overflow:hidden; }
+  html,body{ background:#020304; color:#EAF6FF; }
   body{ font-family:'Galmuri9', monospace; }
 
   .hero{ position:relative; width:100%; height:100vh; overflow:hidden; }
@@ -112,6 +112,50 @@
     .scrollHint{ font-size:9px; }
     .scrollHint .bar{ height:18px; }
   }
+
+  /* ---------------- sections below the hero — fade/slide in on scroll ---------------- */
+  .reveal-section{
+    position:relative; z-index:2;
+    min-height:70vh;
+    padding:120px 52px;
+    display:flex; flex-direction:column; justify-content:center;
+    background:#020304;
+    border-top:1px solid rgba(111,227,255,0.12);
+    opacity:0; transform:translateY(32px);
+    transition:opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);
+  }
+  .reveal-section.in-view{ opacity:1; transform:translateY(0); }
+
+  .section-label{
+    font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.45);
+    margin-bottom:18px;
+  }
+  .reveal-section h2{
+    font-family:'Galmuri14','Galmuri11',monospace;
+    font-size:40px; margin-bottom:44px; color:#EAF6FF;
+  }
+
+  .work-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1000px; }
+  .work-card{
+    border:1px solid rgba(111,227,255,0.18); padding:28px 22px; border-radius:2px;
+    transition:border-color .3s ease, transform .3s ease;
+  }
+  .work-card:hover{ border-color:rgba(111,227,255,0.55); transform:translateY(-4px); }
+  .work-card .tag{ font-size:11px; color:rgba(200,230,255,0.5); letter-spacing:0.08em; }
+  .work-card h3{ font-family:'Galmuri14',monospace; font-size:22px; margin-top:12px; color:#EAF6FF; }
+
+  .contact-text{ color:rgba(200,230,255,0.6); font-size:14px; margin-bottom:18px; }
+  .contact-link{
+    color:#8fe9ff; font-size:20px; text-decoration:none; border-bottom:1px solid rgba(143,233,255,0.4);
+    width:fit-content; padding-bottom:4px; transition:border-color .3s ease;
+  }
+  .contact-link:hover{ border-color:#8fe9ff; }
+
+  @media (max-width:640px){
+    .reveal-section{ padding:80px 20px; }
+    .reveal-section h2{ font-size:26px; }
+    .work-grid{ grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body>
@@ -138,11 +182,37 @@
     </header>
 
     <div class="scrollHint">
-      <span>SCROLL TO ROTATE</span>
+      <span>SCROLL</span>
       <span class="bar"></span>
     </div>
   </div>
 </div>
+
+<section class="reveal-section" id="work">
+  <span class="section-label">01 — Work</span>
+  <h2>최근 작업들</h2>
+  <div class="work-grid">
+    <article class="work-card">
+      <span class="tag">Corporate Branding</span>
+      <h3>Willog</h3>
+    </article>
+    <article class="work-card">
+      <span class="tag">Spatial Branding</span>
+      <h3>소운탕</h3>
+    </article>
+    <article class="work-card">
+      <span class="tag">Product Branding</span>
+      <h3>OHi</h3>
+    </article>
+  </div>
+</section>
+
+<section class="reveal-section" id="contact">
+  <span class="section-label">02 — Contact</span>
+  <h2>대화하기</h2>
+  <p class="contact-text">궁금한 게 있으면 언제든 편하게 연락해주세요.</p>
+  <a class="contact-link" href="mailto:osg497@gmail.com">osg497@gmail.com</a>
+</section>
 
 <script>
   // safety net: if nothing has progressed past 0% after a few seconds,
@@ -175,6 +245,15 @@
       navMenu.classList.remove('open');
     });
   });
+
+  // reveal sections smoothly as they scroll into view
+  const revealSections = document.querySelectorAll('.reveal-section');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  }, { threshold: 0.2 });
+  revealSections.forEach((el) => io.observe(el));
 </script>
 <script type="importmap">
 {

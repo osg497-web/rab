@@ -38,11 +38,6 @@ export async function initScene({ canvas, loadingEl }) {
 
   if (loadingEl) loadingEl.style.display = 'none';
 
-  // ---- wheel input rotates the brain directly (page itself never scrolls) ----
-  window.addEventListener('wheel', (e) => {
-    brain.addScrollRotation(e.deltaY);
-  }, { passive: true });
-
   // ---- subtle mouse parallax ----
   window.addEventListener('mousemove', (e) => {
     const nx = e.clientX / window.innerWidth - 0.5;
