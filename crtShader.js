@@ -4,14 +4,14 @@ export const CRTShader = {
     tDiffuse: { value: null },
     time: { value: 0 },
     resolution: { value: [1, 1] },
-    scanlineIntensity: { value: 0.30 },
-    noiseIntensity: { value: 0.16 },
-    rgbShift: { value: 0.0003 },
+    scanlineIntensity: { value: 0.14 },
+    noiseIntensity: { value: 0.035 },
+    rgbShift: { value: 0.0004 },
     flicker: { value: 1.0 },
     glitchAmount: { value: 0.0 },
     glitchY: { value: 0.5 },
-    vignette: { value: 0.32 },
-    curvature: { value: 0.08 },
+    vignette: { value: 0.28 },
+    curvature: { value: 0.07 },
   },
 
   vertexShader: /* glsl */ `
@@ -93,7 +93,7 @@ export const CRTShader = {
       // clamp toward blue/cyan only — keeps the whole frame monochrome CRT, not full color
       float lum = dot(color, vec3(0.299, 0.587, 0.114));
       vec3 monoCyan = vec3(lum * 0.55, lum * 0.95, lum * 1.15);
-      color = mix(color, monoCyan, 0.55);
+      color = mix(color, monoCyan, 0.30);
 
       gl_FragColor = vec4(color, 1.0);
     }

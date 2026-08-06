@@ -38,7 +38,11 @@
       1.5px -1.5px 0 #EAF6FF, -1.5px 1.5px 0 #EAF6FF;
     -webkit-text-stroke:3px #EAF6FF;
   }
-  .subtitle{ font-size:13px; line-height:1.65; color:rgba(200,230,255,0.55); max-width:560px; }
+  .subtitle{
+    position:absolute; top:48px; right:52px; z-index:3;
+    font-size:13px; line-height:1.65; color:rgba(200,230,255,0.55);
+    max-width:400px; text-align:right;
+  }
 
   nav{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin-top:22px; }
   nav a{
@@ -87,7 +91,10 @@
         1px 0 0 #EAF6FF, -1px 0 0 #EAF6FF,
         0 1px 0 #EAF6FF, 0 -1px 0 #EAF6FF;
     }
-    .subtitle{ font-size:10.5px; max-width:100%; line-height:1.55; }
+    .subtitle{
+      top:66px; right:16px;
+      font-size:9.5px; line-height:1.5; max-width:46%;
+    }
 
     .navToggle{ display:flex; top:30px; right:20px; }
 

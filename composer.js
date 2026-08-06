@@ -40,7 +40,7 @@ export function createComposer(renderer, scene, camera) {
   bloomComposer.addPass(new RenderPass(scene, camera));
 
   // small, tight bloom — a soft glow around firing points only, not a wash over everything
-  const bloomPass = new UnrealBloomPass(size.clone(), 0.35, 0.2, 0.85);
+  const bloomPass = new UnrealBloomPass(size.clone(), 0.30, 0.18, 0.82);
   bloomComposer.addPass(bloomPass);
 
   // ---- pass 2: normal full-color render, then additively mix in the bloom layer, then CRT ----
