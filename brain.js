@@ -49,7 +49,7 @@ function buildBrainPoints(geometry) {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      size: { value: 1.6 },
+      size: { value: 1.3 },
       baseColor: { value: new THREE.Color(0x0d5a72) },
       rimColor: { value: new THREE.Color(0x8fe9ff) },
     },
@@ -57,7 +57,7 @@ function buildBrainPoints(geometry) {
     fragmentShader: holoPointsFragment,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
   });
 
   return new THREE.Points(geometry, material);

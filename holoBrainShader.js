@@ -36,7 +36,7 @@ export const holoPointsFragment = /* glsl */ `
     float variance = 0.7 + 0.3 * fract(sin(vSeed * 91.713) * 4375.234);
 
     vec3 color = mix(baseColor, rimColor, vFresnel) * variance;
-    float alpha = soft * (0.16 + vFresnel * 0.6) * 0.85;
+    float alpha = soft * (0.32 + vFresnel * 0.5);
 
     gl_FragColor = vec4(color, alpha);
   }
