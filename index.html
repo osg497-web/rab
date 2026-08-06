@@ -24,7 +24,7 @@
   }
   .stage a{ pointer-events:auto; }
 
-  header{ display:flex; justify-content:space-between; align-items:flex-start; }
+  header{ display:flex; flex-direction:column; align-items:flex-start; }
   .brand{ display:flex; flex-direction:column; gap:10px; max-width:640px; }
 
   .brand h1{
@@ -40,17 +40,31 @@
   }
   .subtitle{ font-size:13px; line-height:1.65; color:rgba(200,230,255,0.55); max-width:560px; }
 
-  nav{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  nav{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin-top:22px; }
   nav a{
     text-decoration:none; color:rgba(200,230,255,0.55); font-size:26px; padding:8px 0;
     position:relative; transition:color .3s ease;
   }
   nav a::after{
-    content:''; position:absolute; right:0; bottom:2px; height:1px; width:0%;
+    content:''; position:absolute; left:0; bottom:2px; height:1px; width:0%;
     background:#6fe3ff; transition:width .3s ease;
   }
   nav a:hover{ color:#EAF6FF; }
   nav a:hover::after{ width:100%; }
+
+  /* hamburger toggle — hidden on desktop, only used on mobile */
+  .navToggle{
+    display:none;
+    position:absolute; top:44px; right:52px; z-index:20;
+    width:32px; height:22px;
+    flex-direction:column; justify-content:space-between;
+    background:none; border:none; padding:0; cursor:pointer;
+    pointer-events:auto;
+  }
+  .navToggle span{ display:block; height:2px; width:100%; background:#EAF6FF; transition:transform .25s ease, opacity .25s ease; }
+  .navToggle.open span:nth-child(1){ transform:translateY(10px) rotate(45deg); }
+  .navToggle.open span:nth-child(2){ opacity:0; }
+  .navToggle.open span:nth-child(3){ transform:translateY(-10px) rotate(-45deg); }
 
   .scrollHint{
     align-self:center; font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.4);
@@ -59,6 +73,38 @@
   }
   .scrollHint .bar{ width:1px; height:26px; background:linear-gradient(to bottom, rgba(111,227,255,0.7), transparent); }
   @keyframes hintFloat{ 0%,100%{ transform:translateY(0); opacity:.7; } 50%{ transform:translateY(6px); opacity:1; } }
+
+  /* ---------------- mobile ---------------- */
+  @media (max-width:640px){
+    .stage{ padding:26px 20px; }
+
+    .brand{ max-width:72%; gap:6px; }
+    .brand h1{
+      font-size:32px;
+      -webkit-text-stroke:1.5px #EAF6FF;
+      text-shadow:
+        0 0 14px rgba(111,227,255,0.4),
+        1px 0 0 #EAF6FF, -1px 0 0 #EAF6FF,
+        0 1px 0 #EAF6FF, 0 -1px 0 #EAF6FF;
+    }
+    .subtitle{ font-size:10.5px; max-width:100%; line-height:1.55; }
+
+    .navToggle{ display:flex; top:30px; right:20px; }
+
+    nav{
+      position:absolute; top:64px; right:20px; margin-top:0; z-index:19;
+      align-items:flex-end;
+      background:rgba(2,3,4,0.92); border:1px solid rgba(111,227,255,0.25);
+      padding:0 18px; border-radius:2px;
+      max-height:0; overflow:hidden; opacity:0;
+      transition:max-height .3s ease, opacity .3s ease, padding .3s ease;
+    }
+    nav.open{ max-height:280px; opacity:1; padding:14px 18px; }
+    nav a{ font-size:17px; padding:7px 0; }
+
+    .scrollHint{ font-size:9px; }
+    .scrollHint .bar{ height:18px; }
+  }
 </style>
 </head>
 <body>
@@ -73,7 +119,10 @@
         <h1>디자인 연구실</h1>
         <p class="subtitle">디자인 연구실은 내가 멋대로 제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야. 보는건 자유인데 나를 판단하는건 금물이야</p>
       </div>
-      <nav>
+      <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="navMenu">
         <a href="#">대화하기</a>
         <a href="#">스킬</a>
         <a href="#">디자인</a>
@@ -104,6 +153,20 @@
   window.addEventListener('error', (e) => {
     const el = document.getElementById('loadingEl');
     if (el) el.innerHTML = `스크립트 에러: ${e.message || '알 수 없는 오류'}<br>콘솔(F12)을 확인해주세요.`;
+  });
+
+  // mobile hamburger menu toggle
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    navMenu.classList.toggle('open');
+  });
+  navMenu.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => {
+      navToggle.classList.remove('open');
+      navMenu.classList.remove('open');
+    });
   });
 </script>
 <script type="importmap">
