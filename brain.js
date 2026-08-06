@@ -66,10 +66,19 @@ export async function createBrain(scene, { onProgress } = {}) {
   let targetScrollRotY = 0, curScrollRotY = 0;
   let targetMouseRotY = 0, targetMouseRotX = 0;
   let curMouseRotY = 0, curMouseRotX = 0;
+  let targetDragRotY = 0, targetDragRotX = 0;
+  let curDragRotY = 0, curDragRotX = 0;
 
-  function setScrollProgress(p) {
-    // full slow turn across the scrollable range, eased by damping in update()
-    targetScrollRotY = p * Math.PI * 0.9;
+  function addScrollRotation(deltaY) {
+    // deltaY > 0 (scroll down) spins one way, < 0 (scroll up) spins the other —
+    // this keeps accumulating, it never resets, since the page itself doesn't scroll
+    targetScrollRotY += deltaY * 0.0035;
+  }
+
+  function addDragRotation(dx, dy) {
+    // click-and-drag spin, like grabbing a globe — accumulates just like scroll
+    targetDragRotY += dx * 0.006;
+    targetDragRotX += dy * 0.006;
   }
 
   function setMouse(nx, ny) {
@@ -85,9 +94,11 @@ export async function createBrain(scene, { onProgress } = {}) {
     curScrollRotY = damp(curScrollRotY, targetScrollRotY, 4, dt);
     curMouseRotY = damp(curMouseRotY, targetMouseRotY, 5, dt);
     curMouseRotX = damp(curMouseRotX, targetMouseRotX, 5, dt);
+    curDragRotY = damp(curDragRotY, targetDragRotY, 8, dt);
+    curDragRotX = damp(curDragRotX, targetDragRotX, 8, dt);
 
-    group.rotation.y = rotY + curScrollRotY + curMouseRotY;
-    group.rotation.x = curMouseRotX;
+    group.rotation.y = rotY + curScrollRotY + curMouseRotY + curDragRotY;
+    group.rotation.x = curMouseRotX + curDragRotX;
 
     // floating + breathing
     group.position.y = Math.sin(t * 0.55) * 0.14;
@@ -95,5 +106,5 @@ export async function createBrain(scene, { onProgress } = {}) {
     group.scale.setScalar(breath);
   }
 
-  return { group, material, update, setScrollProgress, setMouse };
+  return { group, material, update, addScrollRotation, addDragRotation, setMouse };
 }

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { createBrain } from './brain.js';
 import { createComposer } from './composer.js';
-import { clamp } from './math.js';
 
 export async function initScene({ canvas, loadingEl }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
@@ -39,14 +38,9 @@ export async function initScene({ canvas, loadingEl }) {
 
   if (loadingEl) loadingEl.style.display = 'none';
 
-  // ---- scroll progress (eased inside brain.update via damp) ----
-  function getScrollProgress() {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    if (max <= 0) return 0;
-    return clamp(window.scrollY / max, 0, 1);
-  }
-  window.addEventListener('scroll', () => {
-    brain.setScrollProgress(getScrollProgress());
+  // ---- wheel input rotates the brain directly (page itself never scrolls) ----
+  window.addEventListener('wheel', (e) => {
+    brain.addScrollRotation(e.deltaY);
   }, { passive: true });
 
   // ---- subtle mouse parallax ----
@@ -55,6 +49,33 @@ export async function initScene({ canvas, loadingEl }) {
     const ny = e.clientY / window.innerHeight - 0.5;
     brain.setMouse(nx, ny);
   });
+
+  // ---- click-and-drag to spin the brain directly, like grabbing a globe ----
+  let dragging = false;
+  let lastX = 0, lastY = 0;
+
+  canvas.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    brain.addDragRotation(dx, dy);
+  });
+
+  window.addEventListener('pointerup', () => {
+    dragging = false;
+    canvas.style.cursor = 'grab';
+  });
+
+  canvas.style.cursor = 'grab';
 
   function onResize() {
     const w = window.innerWidth, h = window.innerHeight;
