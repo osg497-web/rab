@@ -4,13 +4,13 @@ export const CRTShader = {
     tDiffuse: { value: null },
     time: { value: 0 },
     resolution: { value: [1, 1] },
-    scanlineIntensity: { value: 0.12 },
-    noiseIntensity: { value: 0.012 },
+    scanlineIntensity: { value: 0.30 },
+    noiseIntensity: { value: 0.16 },
     rgbShift: { value: 0.0003 },
     flicker: { value: 1.0 },
     glitchAmount: { value: 0.0 },
     glitchY: { value: 0.5 },
-    vignette: { value: 0.30 },
+    vignette: { value: 0.32 },
     curvature: { value: 0.08 },
   },
 
@@ -72,8 +72,11 @@ export const CRTShader = {
       vec3 color = vec3(r, g, b);
 
       // dense, thin scanlines
-      float scan = sin(uv.y * resolution.y * 1.5) * 0.5 + 0.5;
-      color -= scan * scanlineIntensity * 0.5;
+      // dense, layered scanlines — two frequencies stacked, like interlaced analog video
+      float scanA = sin(uv.y * resolution.y * 1.5) * 0.5 + 0.5;
+      float scanB = sin(uv.y * resolution.y * 3.1 + 1.7) * 0.5 + 0.5;
+      color -= scanA * scanlineIntensity * 0.45;
+      color -= scanB * scanlineIntensity * 0.25;
 
       // fast monochrome grain — this is what reads as "CRT static", not a smooth gradient
       float n = hash(uv * resolution.xy * 0.5 + floor(time * 30.0));
@@ -90,7 +93,7 @@ export const CRTShader = {
       // clamp toward blue/cyan only — keeps the whole frame monochrome CRT, not full color
       float lum = dot(color, vec3(0.299, 0.587, 0.114));
       vec3 monoCyan = vec3(lum * 0.55, lum * 0.95, lum * 1.15);
-      color = mix(color, monoCyan, 0.35);
+      color = mix(color, monoCyan, 0.55);
 
       gl_FragColor = vec4(color, 1.0);
     }

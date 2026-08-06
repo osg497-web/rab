@@ -48,22 +48,28 @@ export const holoBrainFragment = /* glsl */ `
 
     float fresnel = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.8);
 
+    // soft bright zone from above, like the reference's top-left highlight
+    float topGlow = smoothstep(-0.2, 1.0, N.y) * 0.35;
+
     // static horizontal scan bands baked onto the surface — a fixed pattern, not animated
     float scan = sin(vWorldPos.y * 160.0);
     scan = smoothstep(0.15, 0.9, scan);
 
-    // static per-pixel grain, tied only to UV so it doesn't shimmer over time
+    // coarse static grain, tied only to UV so it doesn't shimmer over time —
+    // this is what makes the surface itself read as a noisy CRT scan, not a clean render
     float n = random(vUv * 500.0);
+    float n2 = random(vUv * 140.0 + 11.0);
 
     vec3 color =
-      baseColor * (0.16 + diffuseKey * 0.62 + diffuseRim * 0.22) +
+      baseColor * (0.14 + diffuseKey * 0.58 + diffuseRim * 0.22 + topGlow) +
       keyColor * diffuseKey * 0.12 +
       rimColor * fresnel * 0.55 +
-      glowColor * scan * 0.10 +
-      vec3(n) * 0.045;
+      glowColor * scan * 0.14 +
+      vec3(n) * 0.16 +
+      vec3(n2) * 0.08;
 
     // gentle posterize — keeps it from reading as a smooth modern gradient render
-    color = mix(color, floor(color * 9.0) / 9.0, 0.30);
+    color = mix(color, floor(color * 8.0) / 8.0, 0.4);
 
     gl_FragColor = vec4(color, opacity);
   }
