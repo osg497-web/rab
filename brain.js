@@ -200,7 +200,7 @@ export async function createBrain(scene, { onProgress } = {}) {
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z) || 1;
   const isMobile = window.innerWidth <= 640;
-  const targetSize = isMobile ? 3.2 * 0.9 : 3.2;
+  const targetSize = (isMobile ? 3.2 * 0.9 : 3.2) * 1.1;
   const scale = targetSize / maxDim;
 
   root.traverse((child) => {
@@ -269,7 +269,7 @@ export async function createBrain(scene, { onProgress } = {}) {
     group.rotation.y = rotY + curScrollRotY + curMouseRotY + curDragRotY;
     group.rotation.x = curMouseRotX + curDragRotX;
 
-    group.position.y = Math.sin(t * 0.55) * 0.14;
+    group.position.y = -0.45 + Math.sin(t * 0.55) * 0.14;
     const breath = 1 + Math.sin(t * 0.7) * 0.015;
     group.scale.setScalar(breath);
 
