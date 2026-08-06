@@ -1,18 +1,26 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { holoBrainVertex, holoBrainFragment } from './holoBrainShader.js';
 import { damp } from './math.js';
 
 const MODEL_URL = './Brain_Model.glb';
 
 export function createHoloMaterial() {
-  return new THREE.MeshStandardMaterial({
-    color: 0x063848,
-    emissive: 0x00a8c6,
-    emissiveIntensity: 0.35,
-    roughness: 0.65,
-    metalness: 0.05,
-    transparent: true,
-    opacity: 0.92,
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      opacity: { value: 0.97 },
+      baseColor: { value: new THREE.Color(0x0b6b86) },
+      glowColor: { value: new THREE.Color(0x77eaff) },
+      keyDir: { value: new THREE.Vector3(4, 3, 5).normalize() },
+      keyColor: { value: new THREE.Color(0x77eaff) },
+      rimDir: { value: new THREE.Vector3(-4, 2, -4).normalize() },
+      rimColor: { value: new THREE.Color(0x00d9ff) },
+    },
+    vertexShader: holoBrainVertex,
+    fragmentShader: holoBrainFragment,
+    transparent: false,
+    side: THREE.FrontSide,
   });
 }
 
@@ -88,6 +96,8 @@ export async function createBrain(scene, { onProgress } = {}) {
   }
 
   function update(dt, t) {
+    material.uniforms.time.value = t;
+
     // gentle continuous idle spin
     rotY += dt * 0.06;
 

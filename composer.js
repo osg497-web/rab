@@ -12,7 +12,7 @@ export function createComposer(renderer, scene, camera) {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  const bloom = new UnrealBloomPass(size.clone(), 0.45, 0.35, 0.75);
+  const bloom = new UnrealBloomPass(size.clone(), 0.65, 0.3, 0.68);
   composer.addPass(bloom);
 
   const crtPass = new ShaderPass(CRTShader);
