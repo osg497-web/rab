@@ -7,12 +7,21 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
-  html{ scroll-snap-type: y mandatory; }
   html,body{ background:#020304; color:#EAF6FF; }
   body{ font-family:'Galmuri9', monospace; }
 
-  .hero{ position:relative; width:100%; height:100vh; overflow:hidden; scroll-snap-align:start; scroll-snap-stop:always; }
+  /* ---- pinned scroll-scrub zone: the brain stays fixed on screen while
+     scroll position drives its rotation and crossfades the text over it ---- */
+  .pin-wrap{ position:relative; height:280vh; }
+  .pin-inner{ position:sticky; top:0; width:100%; height:100vh; overflow:hidden; }
+
   canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .dissolve{
+    position:absolute; inset:0; z-index:6; pointer-events:none;
+    background:#020304; opacity:0;
+    backdrop-filter:blur(0px);
+  }
 
   .loading{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -79,6 +88,26 @@
   .scrollHint .bar{ width:1px; height:26px; background:linear-gradient(to bottom, rgba(111,227,255,0.7), transparent); }
   @keyframes hintFloat{ 0%,100%{ transform:translateY(0); opacity:.7; } 50%{ transform:translateY(6px); opacity:1; } }
 
+  /* second text frame, crossfades in over the same pinned brain as you scroll */
+  .frame2{
+    position:absolute; inset:0; z-index:4; pointer-events:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; opacity:0;
+  }
+  .frame2 .eyebrow{
+    display:inline-block; background:rgba(111,227,255,0.14); color:#8fe9ff;
+    font-size:11px; letter-spacing:0.14em; padding:4px 10px; margin-bottom:20px;
+    border:1px solid rgba(111,227,255,0.3);
+  }
+  .frame2 h2{
+    font-family:'Galmuri14','Galmuri11',monospace;
+    font-size:40px; line-height:1.35; max-width:720px; color:#EAF6FF;
+    text-shadow:0 0 24px rgba(111,227,255,0.35);
+  }
+  .frame2 p{
+    margin-top:20px; font-size:13px; color:rgba(200,230,255,0.55); max-width:480px; line-height:1.6;
+  }
+
   /* ---------------- mobile ---------------- */
   @media (max-width:640px){
     .stage{ padding:26px 20px; }
@@ -124,7 +153,6 @@
     border-top:1px solid rgba(111,227,255,0.12);
     opacity:0; transform:translateY(32px);
     transition:opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);
-    scroll-snap-align:start; scroll-snap-stop:always;
   }
   .reveal-section.in-view{ opacity:1; transform:translateY(0); }
 
@@ -162,31 +190,41 @@
 </head>
 <body>
 
-<div class="hero">
-  <canvas id="brainCanvas"></canvas>
-  <div class="loading" id="loadingEl">LOADING BRAIN — 0%</div>
+<div class="pin-wrap">
+  <div class="pin-inner">
+    <canvas id="brainCanvas"></canvas>
+    <div class="loading" id="loadingEl">LOADING BRAIN — 0%</div>
 
-  <div class="stage">
-    <header>
-      <div class="brand">
-        <h1>디자인 연구실</h1>
-        <p class="subtitle">디자인 연구실은 내가 멋대로 제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야. 보는건 자유인데 나를 판단하는건 금물이야</p>
+    <div class="stage">
+      <header>
+        <div class="brand">
+          <h1>디자인 연구실</h1>
+          <p class="subtitle">디자인 연구실은 내가 멋대로 제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야. 보는건 자유인데 나를 판단하는건 금물이야</p>
+        </div>
+        <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
+          <span></span><span></span><span></span>
+        </button>
+        <nav id="navMenu">
+          <a href="#">대화하기</a>
+          <a href="#">스킬</a>
+          <a href="#">디자인</a>
+          <a href="#">etc</a>
+        </nav>
+      </header>
+
+      <div class="scrollHint">
+        <span>SCROLL</span>
+        <span class="bar"></span>
       </div>
-      <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
-      <nav id="navMenu">
-        <a href="#">대화하기</a>
-        <a href="#">스킬</a>
-        <a href="#">디자인</a>
-        <a href="#">etc</a>
-      </nav>
-    </header>
-
-    <div class="scrollHint">
-      <span>SCROLL</span>
-      <span class="bar"></span>
     </div>
+
+    <div class="frame2" id="frame2">
+      <span class="eyebrow">OUR VISION</span>
+      <h2>데이터를 넘어, 감각으로<br>기억되는 브랜드를 만듭니다</h2>
+      <p>보이는 것과 느껴지는 것 사이, 그 틈을 설계하는 디자인 연구실이에요.</p>
+    </div>
+
+    <div class="dissolve" id="dissolve"></div>
   </div>
 </div>
 
@@ -268,7 +306,7 @@
 <script type="module">
   import { initScene } from './scene.js';
 
-  initScene({
+  const app = await initScene({
     canvas: document.getElementById('brainCanvas'),
     loadingEl: document.getElementById('loadingEl'),
   }).catch((err) => {
@@ -276,6 +314,42 @@
     const el = document.getElementById('loadingEl');
     if (el) el.textContent = '모델을 불러오지 못했어요 — 콘솔을 확인해주세요.';
   });
+
+  if (app && app.brain) {
+    const pinWrap = document.querySelector('.pin-wrap');
+    const stage = document.querySelector('.stage');
+    const frame2 = document.getElementById('frame2');
+    const dissolve = document.getElementById('dissolve');
+
+    function clamp01(v) { return Math.min(1, Math.max(0, v)); }
+
+    function onScroll() {
+      const rect = pinWrap.getBoundingClientRect();
+      const total = pinWrap.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const p = clamp01(total > 0 ? scrolled / total : 0);
+
+      // 0.00–0.30: hero text visible, brain settles into its first pose
+      // 0.30–0.55: hero text fades out, "OUR VISION" frame fades in
+      // 0.55–0.85: vision frame holds, brain keeps rotating
+      // 0.85–1.00: everything dissolves into the next section
+      const heroOpacity = 1 - clamp01((p - 0.05) / 0.25);
+      const frame2In = clamp01((p - 0.30) / 0.25);
+      const frame2Out = clamp01((p - 0.80) / 0.18);
+      const frame2Opacity = frame2In * (1 - frame2Out);
+      const dissolveOpacity = clamp01((p - 0.85) / 0.15);
+
+      stage.style.opacity = heroOpacity;
+      frame2.style.opacity = frame2Opacity;
+      dissolve.style.opacity = dissolveOpacity;
+      dissolve.style.backdropFilter = `blur(${dissolveOpacity * 14}px)`;
+
+      app.brain.setPinProgress(p);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
 </script>
 </body>
 </html>

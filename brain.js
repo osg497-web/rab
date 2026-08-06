@@ -242,6 +242,11 @@ export async function createBrain(scene, { onProgress } = {}) {
     targetScrollRotY += deltaY * 0.0035;
   }
 
+  function setPinProgress(p) {
+    // absolute, not accumulating — scrubs deterministically with scroll position
+    targetScrollRotY = p * Math.PI * 0.55;
+  }
+
   function addDragRotation(dx, dy) {
     targetDragRotY += dx * 0.006;
     targetDragRotX += dy * 0.006;
@@ -271,5 +276,5 @@ export async function createBrain(scene, { onProgress } = {}) {
     synapseSystem.update(dt);
   }
 
-  return { group, material, update, addScrollRotation, addDragRotation, setMouse };
+  return { group, material, update, addScrollRotation, setPinProgress, addDragRotation, setMouse };
 }
