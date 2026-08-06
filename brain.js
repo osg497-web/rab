@@ -269,7 +269,7 @@ export async function createBrain(scene, { onProgress } = {}) {
     group.rotation.y = rotY + curScrollRotY + curMouseRotY + curDragRotY;
     group.rotation.x = curMouseRotX + curDragRotX;
 
-    group.position.y = -0.45 + Math.sin(t * 0.55) * 0.14;
+    group.position.y = -0.8 + Math.sin(t * 0.55) * 0.14;
     const breath = 1 + Math.sin(t * 0.7) * 0.015;
     group.scale.setScalar(breath);
 
