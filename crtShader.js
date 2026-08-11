@@ -4,14 +4,14 @@ export const CRTShader = {
     tDiffuse: { value: null },
     time: { value: 0 },
     resolution: { value: [1, 1] },
-    scanlineIntensity: { value: 0.14 },
-    noiseIntensity: { value: 0.035 },
-    rgbShift: { value: 0.0004 },
+    scanlineIntensity: { value: 0.05 },
+    noiseIntensity: { value: 0.015 },
+    rgbShift: { value: 0.0003 },
     flicker: { value: 1.0 },
     glitchAmount: { value: 0.0 },
     glitchY: { value: 0.5 },
-    vignette: { value: 0.28 },
-    curvature: { value: 0.07 },
+    vignette: { value: 0.1 },
+    curvature: { value: 0.02 },
   },
 
   vertexShader: /* glsl */ `
@@ -51,9 +51,9 @@ export const CRTShader = {
     void main() {
       vec2 uv = curveUV(vUv);
 
-      // outside the curved screen bounds — pure black, sells the CRT glass edge
+      // outside the curved screen bounds — fade to white so it merges with the bright page
       if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         return;
       }
 
@@ -90,10 +90,12 @@ export const CRTShader = {
       float vig = 1.0 - dot(centered, centered) * vignette;
       color *= vig;
 
-      // clamp toward blue/cyan only — keeps the whole frame monochrome CRT, not full color
+      // a whisper of blue/cyan tint in the shadows only — keeps some CRT character
+      // without dragging the bright background toward gray-cyan
       float lum = dot(color, vec3(0.299, 0.587, 0.114));
       vec3 monoCyan = vec3(lum * 0.55, lum * 0.95, lum * 1.15);
-      color = mix(color, monoCyan, 0.30);
+      float tintAmount = 0.12 * (1.0 - smoothstep(0.65, 0.98, lum));
+      color = mix(color, monoCyan, tintAmount);
 
       gl_FragColor = vec4(color, 1.0);
     }

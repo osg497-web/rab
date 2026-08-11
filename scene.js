@@ -6,9 +6,9 @@ export async function initScene({ canvas, loadingEl }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
-  renderer.setClearColor(0x000000, 1);
+  renderer.setClearColor(0xffffff, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.7;
+  renderer.toneMappingExposure = 0.95;
 
   const scene = new THREE.Scene();
 
