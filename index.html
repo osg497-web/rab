@@ -30,37 +30,46 @@
 
   .stage{
     position:absolute; inset:0; z-index:4; pointer-events:none;
-    padding:44px 52px; display:flex; flex-direction:column; justify-content:space-between;
   }
-  .stage a{ pointer-events:auto; }
+  .stage a, .stage button{ pointer-events:auto; }
 
-  header{ display:flex; flex-direction:column; align-items:flex-start; }
-  .brand{ display:flex; flex-direction:column; gap:10px; max-width:640px; }
+  /* ---- faint blueprint grid lines, purely decorative ---- */
+  .grid-lines{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .grid-lines .v-line{ position:absolute; top:0; bottom:0; width:1px; background:rgba(111,227,255,0.07); }
+  .grid-lines .h-line{ position:absolute; left:0; right:0; height:1px; background:rgba(111,227,255,0.07); }
+  .grid-lines .cross{ position:absolute; width:10px; height:10px; margin:-5px; }
+  .grid-lines .cross::before,.grid-lines .cross::after{ content:''; position:absolute; background:rgba(111,227,255,0.3); }
+  .grid-lines .cross::before{ left:50%; top:0; bottom:0; width:1px; margin-left:-0.5px; }
+  .grid-lines .cross::after{ top:50%; left:0; right:0; height:1px; margin-top:-0.5px; }
 
-  .brand h1{
-    font-family:'Galmuri14','Galmuri11',monospace;
-    font-size:88px; font-weight:900; color:#EAF6FF;
-    text-shadow:
-      0 0 26px rgba(111,227,255,0.4),
-      1.5px 0 0 #EAF6FF, -1.5px 0 0 #EAF6FF,
-      0 1.5px 0 #EAF6FF, 0 -1.5px 0 #EAF6FF,
-      1.5px 1.5px 0 #EAF6FF, -1.5px -1.5px 0 #EAF6FF,
-      1.5px -1.5px 0 #EAF6FF, -1.5px 1.5px 0 #EAF6FF;
-    -webkit-text-stroke:3px #EAF6FF;
+  /* ---- top bar: logo / reality toggle / local time ---- */
+  .topbar{
+    position:absolute; top:40px; left:52px; right:52px; z-index:5;
+    display:flex; align-items:flex-start; justify-content:space-between;
   }
-  .subtitle{
-    position:absolute; top:48px; right:52px; z-index:3;
-    font-size:18px; line-height:1.65; color:rgba(200,230,255,0.55);
-    max-width:560px; text-align:right;
+  .logo-mark{
+    font-family:'Galmuri11','Galmuri9',monospace; font-size:14px; letter-spacing:0.1em; color:#EAF6FF;
   }
+  .reality-toggle{
+    display:flex; align-items:center; gap:8px;
+    background:rgba(2,3,4,0.4); border:1px solid rgba(111,227,255,0.35); color:rgba(200,230,255,0.8);
+    font-family:'Galmuri9',monospace; font-size:11px; letter-spacing:0.1em; padding:8px 14px;
+    cursor:pointer; transition:border-color .3s ease, color .3s ease;
+  }
+  .reality-toggle:hover{ border-color:#6fe3ff; color:#EAF6FF; }
+  .reality-toggle .dot{ width:6px; height:6px; border-radius:50%; background:#6fe3ff; box-shadow:0 0 6px #6fe3ff; }
+  .local-time{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .tz-label{ font-size:9px; letter-spacing:0.18em; color:rgba(200,230,255,0.4); }
+  .tz-value{ font-size:13px; letter-spacing:0.05em; color:rgba(200,230,255,0.85); }
 
-  nav{ display:flex; flex-direction:column; align-items:flex-start; gap:0; margin-top:22px; }
+  /* ---- nav, tucked under the logo ---- */
+  .stage nav{ position:absolute; top:76px; left:52px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
   nav a{
-    text-decoration:none; color:rgba(200,230,255,0.55); font-size:18px; padding:4px 0;
+    text-decoration:none; color:rgba(200,230,255,0.5); font-size:12px; padding:3px 0;
     position:relative; transition:color .3s ease;
   }
   nav a::after{
-    content:''; position:absolute; left:0; bottom:2px; height:1px; width:0%;
+    content:''; position:absolute; left:0; bottom:1px; height:1px; width:0%;
     background:#6fe3ff; transition:width .3s ease;
   }
   nav a:hover{ color:#EAF6FF; }
@@ -69,7 +78,7 @@
   /* hamburger toggle — hidden on desktop, only used on mobile */
   .navToggle{
     display:none;
-    position:absolute; top:44px; right:52px; z-index:20;
+    position:absolute; top:40px; right:52px; z-index:20;
     width:32px; height:22px;
     flex-direction:column; justify-content:space-between;
     background:none; border:none; padding:0; cursor:pointer;
@@ -80,13 +89,103 @@
   .navToggle.open span:nth-child(2){ opacity:0; }
   .navToggle.open span:nth-child(3){ transform:translateY(-10px) rotate(-45deg); }
 
+  /* ---- big headline, upper-left ---- */
+  .brand{ position:absolute; left:52px; top:150px; z-index:5; max-width:600px; }
+  .brand h1{
+    font-family:'Galmuri14','Galmuri11',monospace;
+    font-size:80px; font-weight:900; color:#EAF6FF; line-height:1.05;
+    text-shadow:
+      0 0 26px rgba(111,227,255,0.4),
+      1.5px 0 0 #EAF6FF, -1.5px 0 0 #EAF6FF,
+      0 1.5px 0 #EAF6FF, 0 -1.5px 0 #EAF6FF,
+      1.5px 1.5px 0 #EAF6FF, -1.5px -1.5px 0 #EAF6FF,
+      1.5px -1.5px 0 #EAF6FF, -1.5px 1.5px 0 #EAF6FF;
+    -webkit-text-stroke:3px #EAF6FF;
+  }
+
+  /* ---- annotation callouts pointing at the brain ---- */
+  .callout{ position:absolute; z-index:5; display:flex; font-size:12px; line-height:1.6; color:rgba(200,230,255,0.7); }
+  .callout .node{
+    flex:none; width:10px; height:10px; margin-top:1px;
+    border:1.5px solid rgba(200,230,255,0.75); display:flex; align-items:center; justify-content:center;
+    background:rgba(2,3,4,0.5);
+  }
+  .callout .node::before{ content:''; width:4px; height:4px; background:rgba(200,230,255,0.9); }
+  .callout .line{ flex:none; background:rgba(200,230,255,0.35); align-self:center; }
+  .callout p{ margin:0; }
+
+  .callout-left{ left:6%; top:40%; align-items:center; max-width:280px; }
+  .callout-left .line{ width:64px; height:1px; margin:0 12px; }
+  .callout-left p{ order:-1; text-align:right; max-width:190px; }
+  .callout-left{ flex-direction:row; }
+
+  .callout-right{ right:5%; top:30%; align-items:flex-start; }
+  .callout-right .line{ width:64px; height:1px; margin-top:6px; }
+
+  .callout-bottom{ left:50%; top:64%; transform:translateX(-50%); flex-direction:column; align-items:center; text-align:center; }
+  .callout-bottom .line{ width:1px; height:44px; margin:2px 0; }
+
+  .info-card{
+    border:1px solid rgba(111,227,255,0.3); background:rgba(2,3,4,0.55); backdrop-filter:blur(6px);
+    padding:16px 20px; width:250px;
+  }
+  .info-card-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-bottom:10px; margin-bottom:10px; border-bottom:1px solid rgba(111,227,255,0.25);
+    font-family:'Galmuri14',monospace; font-size:15px; color:#EAF6FF;
+  }
+  .info-card-head .count{ font-size:10px; letter-spacing:0.08em; color:rgba(200,230,255,0.5); }
+  .info-card-body p{ font-size:12px; line-height:1.75; color:rgba(200,230,255,0.7); margin:0 0 8px; }
+  .info-card-body .arrow{ color:#8fe9ff; margin-bottom:0; }
+
+  /* ---- bottom-left: core threads list ---- */
+  .core-threads{ position:absolute; left:52px; bottom:44px; z-index:5; max-width:290px; }
+  .ct-title{ display:block; font-size:11px; letter-spacing:0.1em; color:rgba(200,230,255,0.85); margin-bottom:14px; }
+  .core-threads ol{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .core-threads li{ display:flex; align-items:baseline; gap:10px; font-size:12px; color:rgba(200,230,255,0.75); }
+  .core-threads .num{ flex:none; color:rgba(200,230,255,0.4); font-size:11px; }
+  .core-threads .track{ flex:1; height:1px; background:repeating-linear-gradient(to right, rgba(111,227,255,0.35) 0 3px, transparent 3px 6px); }
+  .core-threads .label{ flex:none; letter-spacing:0.03em; }
+
+  /* ---- bottom-right: "not a studio" note widget ---- */
+  .note-widget{
+    position:absolute; right:52px; bottom:44px; z-index:5; width:300px;
+    border:1px solid rgba(111,227,255,0.3); background:rgba(2,3,4,0.6); backdrop-filter:blur(6px);
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .note-widget.hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
+  .note-head{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:10px 14px; border-bottom:1px solid rgba(111,227,255,0.25);
+    font-size:11px; letter-spacing:0.03em; color:#EAF6FF;
+  }
+  .note-close{ background:none; border:none; color:rgba(200,230,255,0.6); font-size:15px; line-height:1; cursor:pointer; }
+  .note-close:hover{ color:#EAF6FF; }
+  .note-body{ padding:14px; font-size:12px; line-height:1.75; color:rgba(200,230,255,0.7); }
+  .note-links{ display:flex; gap:8px; padding:0 14px 14px; }
+  .note-links a{
+    border:1px solid rgba(111,227,255,0.3); padding:6px 12px; font-size:11px;
+    color:rgba(200,230,255,0.75); text-decoration:none; transition:border-color .3s ease, color .3s ease;
+  }
+  .note-links a:hover{ border-color:#6fe3ff; color:#EAF6FF; }
+
   .scrollHint{
-    align-self:center; font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.4);
+    position:absolute; left:50%; bottom:200px; transform:translateX(-50%); z-index:5;
+    font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.4);
     display:flex; flex-direction:column; align-items:center; gap:8px;
     animation:hintFloat 2.4s ease-in-out infinite;
   }
   .scrollHint .bar{ width:1px; height:26px; background:linear-gradient(to bottom, rgba(111,227,255,0.7), transparent); }
   @keyframes hintFloat{ 0%,100%{ transform:translateY(0); opacity:.7; } 50%{ transform:translateY(6px); opacity:1; } }
+
+  /* ---- "change reality" easter egg triggered by the toggle button ---- */
+  body.alt-reality #brainCanvas,
+  body.alt-reality .grid-lines,
+  body.alt-reality .brand h1{
+    filter:hue-rotate(180deg);
+    transition:filter .5s ease;
+  }
+  #brainCanvas, .grid-lines, .brand h1{ transition:filter .5s ease; }
 
   /* second text frame, crossfades in over the same pinned brain as you scroll */
   .frame2{
@@ -110,9 +209,12 @@
 
   /* ---------------- mobile ---------------- */
   @media (max-width:640px){
-    .stage{ padding:26px 20px; }
+    .topbar{ top:24px; left:20px; right:20px; }
+    .logo-mark{ font-size:12px; }
+    .reality-toggle{ display:none; }
+    .local-time{ display:none; }
 
-    .brand{ max-width:72%; gap:6px; }
+    .brand{ left:20px; top:100px; max-width:78%; }
     .brand h1{
       font-size:32px;
       -webkit-text-stroke:1.5px #EAF6FF;
@@ -121,25 +223,23 @@
         1px 0 0 #EAF6FF, -1px 0 0 #EAF6FF,
         0 1px 0 #EAF6FF, 0 -1px 0 #EAF6FF;
     }
-    .subtitle{
-      top:66px; right:16px;
-      font-size:9.5px; line-height:1.5; max-width:46%;
-    }
 
-    .navToggle{ display:flex; top:30px; right:20px; }
+    .callout-left, .callout-right, .callout-bottom, .info-card, .core-threads, .note-widget{ display:none; }
 
-    nav{
-      position:absolute; top:64px; right:20px; margin-top:0; z-index:19;
+    .navToggle{ display:flex; top:24px; right:20px; }
+
+    .stage nav{
+      position:absolute; top:60px; right:20px; left:auto; margin-top:0; z-index:19;
       align-items:flex-end;
       background:rgba(2,3,4,0.92); border:1px solid rgba(111,227,255,0.25);
       padding:0 18px; border-radius:2px;
       max-height:0; overflow:hidden; opacity:0;
       transition:max-height .3s ease, opacity .3s ease, padding .3s ease;
     }
-    nav.open{ max-height:280px; opacity:1; padding:14px 18px; }
+    .stage nav.open{ max-height:280px; opacity:1; padding:14px 18px; }
     nav a{ font-size:17px; padding:7px 0; }
 
-    .scrollHint{ font-size:9px; }
+    .scrollHint{ bottom:60px; font-size:9px; }
     .scrollHint .bar{ height:18px; }
   }
 
@@ -157,16 +257,27 @@
   .reveal-section.in-view{ opacity:1; transform:translateY(0); }
 
   .section-label{
+    display:flex; align-items:center; gap:12px;
     font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.45);
     margin-bottom:18px;
   }
+  .section-label::after{ content:''; flex:1; max-width:120px; height:1px; background:rgba(111,227,255,0.25); }
   .reveal-section h2{
     font-family:'Galmuri14','Galmuri11',monospace;
     font-size:40px; margin-bottom:44px; color:#EAF6FF;
   }
 
+  /* corner tick marks, echoing the hero's blueprint grid */
+  .reveal-section{ position:relative; }
+  .reveal-section::before, .reveal-section::after{
+    content:''; position:absolute; width:9px; height:9px; opacity:0.5;
+  }
+  .reveal-section::before{ top:24px; left:24px; border-top:1px solid rgba(111,227,255,0.5); border-left:1px solid rgba(111,227,255,0.5); }
+  .reveal-section::after{ bottom:24px; right:24px; border-bottom:1px solid rgba(111,227,255,0.5); border-right:1px solid rgba(111,227,255,0.5); }
+
   .work-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1000px; }
   .work-card{
+    position:relative;
     border:1px solid rgba(111,227,255,0.18); padding:28px 22px; border-radius:2px;
     transition:border-color .3s ease, transform .3s ease;
   }
@@ -196,21 +307,92 @@
     <div class="loading" id="loadingEl">LOADING BRAIN — 0%</div>
 
     <div class="stage">
-      <header>
-        <div class="brand">
-          <h1>디자인 연구실</h1>
-          <p class="subtitle">디자인 연구실은 내가 멋대로 제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야. 보는건 자유인데 나를 판단하는건 금물이야</p>
-        </div>
-        <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
-          <span></span><span></span><span></span>
+      <div class="grid-lines" aria-hidden="true">
+        <span class="v-line" style="left:32%"></span>
+        <span class="v-line" style="left:68%"></span>
+        <span class="h-line" style="top:50%"></span>
+        <span class="cross" style="left:32%; top:50%"></span>
+        <span class="cross" style="left:68%; top:50%"></span>
+        <span class="cross" style="left:6%; top:96%"></span>
+        <span class="cross" style="left:94%; top:96%"></span>
+      </div>
+
+      <div class="topbar">
+        <div class="logo-mark">디자인 연구실</div>
+        <button class="reality-toggle" id="realityToggle" type="button">
+          <span class="dot"></span> 관점 전환
         </button>
-        <nav id="navMenu">
-          <a href="#">대화하기</a>
-          <a href="#">스킬</a>
-          <a href="#">디자인</a>
-          <a href="#">etc</a>
-        </nav>
-      </header>
+        <div class="local-time">
+          <span class="tz-label">LOCAL TIME</span>
+          <span class="tz-value" id="timeValue">SEL --:-- --</span>
+        </div>
+      </div>
+
+      <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="navMenu">
+        <a href="#">대화하기</a>
+        <a href="#">스킬</a>
+        <a href="#">디자인</a>
+        <a href="#">etc</a>
+      </nav>
+
+      <div class="brand">
+        <h1>디자인<br>연구실.</h1>
+      </div>
+
+      <div class="callout callout-left">
+        <p>디자인 연구실은 내가 멋대로<br>제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야.</p>
+        <span class="line"></span>
+        <span class="node"></span>
+      </div>
+
+      <div class="callout callout-right">
+        <span class="node"></span>
+        <span class="line"></span>
+        <div class="info-card">
+          <div class="info-card-head">
+            <span>디자인 연구실</span>
+            <span class="count">BX</span>
+          </div>
+          <div class="info-card-body">
+            <p>BRAND (브랜드)<br>+ EXPERIENCE (경험)</p>
+            <p class="arrow">→ 브랜드를 경험으로 설계하다</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-bottom">
+        <span class="node"></span>
+        <span class="line"></span>
+        <p>보는건 자유,<br>판단은 금물.</p>
+      </div>
+
+      <div class="core-threads">
+        <span class="ct-title">[ CORE THREADS OF MY WORK ]</span>
+        <ol>
+          <li><span class="num">01</span><span class="track"></span><span class="label">BRANDING</span></li>
+          <li><span class="num">02</span><span class="track"></span><span class="label">CONTENT DESIGN</span></li>
+          <li><span class="num">03</span><span class="track"></span><span class="label">DESIGN STRATEGY</span></li>
+          <li><span class="num">04</span><span class="track"></span><span class="label">MOTION &amp; VISUAL</span></li>
+        </ol>
+      </div>
+
+      <div class="note-widget" id="noteWidget">
+        <div class="note-head">
+          <span>NOT A 스튜디오 — 그냥 저예요</span>
+          <button class="note-close" id="noteClose" aria-label="닫기">×</button>
+        </div>
+        <p class="note-body">
+          안녕하세요, 오세경입니다.<br>
+          BX 디자이너로 브랜드와 경험을 잇는 작업을 해요.<br>
+          이 사이트는 제가 만든 것들을 모아둔 공간이에요.
+        </p>
+        <div class="note-links">
+          <a href="mailto:osg497@gmail.com">EMAIL</a>
+        </div>
+      </div>
 
       <div class="scrollHint">
         <span>SCROLL</span>
@@ -270,6 +452,31 @@
   window.addEventListener('error', (e) => {
     const el = document.getElementById('loadingEl');
     if (el) el.innerHTML = `스크립트 에러: ${e.message || '알 수 없는 오류'}<br>콘솔(F12)을 확인해주세요.`;
+  });
+
+  // live local time (Seoul)
+  const timeValueEl = document.getElementById('timeValue');
+  function updateClock() {
+    if (!timeValueEl) return;
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: true,
+    }).format(new Date());
+    timeValueEl.textContent = `SEL ${parts}`;
+  }
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  // "관점 전환" — playful reality-toggle easter egg
+  const realityToggle = document.getElementById('realityToggle');
+  realityToggle?.addEventListener('click', () => {
+    document.body.classList.toggle('alt-reality');
+  });
+
+  // note widget close
+  const noteWidget = document.getElementById('noteWidget');
+  const noteClose = document.getElementById('noteClose');
+  noteClose?.addEventListener('click', () => {
+    noteWidget?.classList.add('hidden');
   });
 
   // mobile hamburger menu toggle
