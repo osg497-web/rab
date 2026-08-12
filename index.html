@@ -16,6 +16,7 @@
     --ink-45:rgba(16,16,20,0.45);
     --ink-line:rgba(16,16,20,0.2);
     --ink-line-soft:rgba(16,16,20,0.08);
+    --line-strong:rgba(16,16,20,0.6);
     --accent:#1c4fd6;
   }
 
@@ -51,15 +52,13 @@
   .grid-lines .cross::before{ left:50%; top:0; bottom:0; width:1px; margin-left:-0.5px; }
   .grid-lines .cross::after{ top:50%; left:0; right:0; height:1px; margin-top:-0.5px; }
 
-  /* ---- top bar: logo / reality toggle / local time ---- */
+  /* ---- top bar: reality toggle / local time ---- */
   .topbar{
     position:absolute; top:40px; left:52px; right:52px; z-index:5;
-    display:flex; align-items:flex-start; justify-content:space-between;
-  }
-  .logo-mark{
-    font-family:'Galmuri11','Galmuri9',monospace; font-size:14px; letter-spacing:0.1em; color:var(--ink);
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:flex-start;
   }
   .reality-toggle{
+    grid-column:2; justify-self:center;
     display:flex; align-items:center; gap:8px;
     background:rgba(255,255,255,0.6); border:1px solid var(--ink-line); color:var(--ink-70);
     font-family:'Galmuri9',monospace; font-size:11px; letter-spacing:0.1em; padding:8px 14px;
@@ -67,39 +66,12 @@
   }
   .reality-toggle:hover{ border-color:var(--ink); color:var(--ink); }
   .reality-toggle .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px rgba(28,79,214,0.5); }
-  .local-time{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .local-time{ grid-column:3; justify-self:end; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
   .tz-label{ font-size:9px; letter-spacing:0.18em; color:var(--ink-45); }
   .tz-value{ font-size:13px; letter-spacing:0.05em; color:var(--ink-70); }
 
-  /* ---- nav, tucked under the logo ---- */
-  .stage nav{ position:absolute; top:76px; left:52px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
-  nav a{
-    text-decoration:none; color:var(--ink-45); font-size:12px; padding:3px 0;
-    position:relative; transition:color .3s ease;
-  }
-  nav a::after{
-    content:''; position:absolute; left:0; bottom:1px; height:1px; width:0%;
-    background:var(--ink); transition:width .3s ease;
-  }
-  nav a:hover{ color:var(--ink); }
-  nav a:hover::after{ width:100%; }
-
-  /* hamburger toggle — hidden on desktop, only used on mobile */
-  .navToggle{
-    display:none;
-    position:absolute; top:40px; right:52px; z-index:20;
-    width:32px; height:22px;
-    flex-direction:column; justify-content:space-between;
-    background:none; border:none; padding:0; cursor:pointer;
-    pointer-events:auto;
-  }
-  .navToggle span{ display:block; height:2px; width:100%; background:var(--ink); transition:transform .25s ease, opacity .25s ease; }
-  .navToggle.open span:nth-child(1){ transform:translateY(10px) rotate(45deg); }
-  .navToggle.open span:nth-child(2){ opacity:0; }
-  .navToggle.open span:nth-child(3){ transform:translateY(-10px) rotate(-45deg); }
-
   /* ---- big headline, upper-left ---- */
-  .brand{ position:absolute; left:52px; top:150px; z-index:5; max-width:600px; }
+  .brand{ position:absolute; left:52px; top:92px; z-index:5; max-width:600px; }
   .brand h1{
     font-family:'Galmuri14','Galmuri11',monospace;
     font-size:80px; font-weight:900; color:var(--ink); line-height:1.05;
@@ -109,23 +81,23 @@
   .callout{ position:absolute; z-index:5; display:flex; font-size:12px; line-height:1.6; color:var(--ink-70); }
   .callout .node{
     flex:none; width:10px; height:10px; margin-top:1px;
-    border:1.5px solid var(--ink-70); display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--ink); display:flex; align-items:center; justify-content:center;
     background:rgba(255,255,255,0.7);
   }
   .callout .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
-  .callout .line{ flex:none; background:var(--ink-line); align-self:center; }
+  .callout .line{ flex:none; background:var(--line-strong); align-self:center; }
   .callout p{ margin:0; }
 
   .callout-left{ left:6%; top:40%; align-items:center; max-width:280px; }
-  .callout-left .line{ width:64px; height:1px; margin:0 12px; }
+  .callout-left .line{ width:64px; height:1.5px; margin:0 12px; }
   .callout-left p{ order:-1; text-align:right; max-width:190px; }
   .callout-left{ flex-direction:row; }
 
   .callout-right{ right:5%; top:30%; align-items:flex-start; }
-  .callout-right .line{ width:64px; height:1px; margin-top:6px; }
+  .callout-right .line{ width:64px; height:1.5px; margin-top:6px; }
 
   .callout-bottom{ left:50%; top:64%; transform:translateX(-50%); flex-direction:column; align-items:center; text-align:center; }
-  .callout-bottom .line{ width:1px; height:44px; margin:2px 0; }
+  .callout-bottom .line{ width:1.5px; height:44px; margin:2px 0; }
 
   .info-card{
     border:1px solid var(--ink-line); background:rgba(255,255,255,0.75); backdrop-filter:blur(6px);
@@ -139,6 +111,28 @@
   .info-card-head .count{ font-size:10px; letter-spacing:0.08em; color:var(--ink-45); }
   .info-card-body p{ font-size:12px; line-height:1.75; color:var(--ink-70); margin:0 0 8px; }
   .info-card-body .arrow{ color:var(--accent); margin-bottom:0; }
+
+  /* ---- new: dogleg callout pointing up from the brain to a "스킬" label ---- */
+  .callout-top{ position:absolute; left:48%; top:16%; z-index:5; width:220px; height:90px; pointer-events:none; }
+  .callout-top .node{
+    position:absolute; left:6px; bottom:8px; width:10px; height:10px;
+    border:2px solid var(--ink); background:rgba(255,255,255,0.7);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .callout-top .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
+  .callout-top .seg1{
+    position:absolute; left:16px; bottom:13px; width:64px; height:1.5px; background:var(--line-strong);
+    transform-origin:left center; transform:rotate(-36deg);
+  }
+  .callout-top .seg2{
+    position:absolute; left:64px; top:30px; width:74px; height:1.5px; background:var(--line-strong);
+  }
+  .callout-top a{
+    position:absolute; left:132px; top:8px;
+    font-size:15px; color:var(--ink-70); text-decoration:none; letter-spacing:0.02em;
+    pointer-events:auto; transition:color .3s ease;
+  }
+  .callout-top a:hover{ color:var(--ink); }
 
   /* ---- bottom-left: core threads list ---- */
   .core-threads{ position:absolute; left:52px; bottom:44px; z-index:5; max-width:290px; }
@@ -206,27 +200,13 @@
   /* ---------------- mobile ---------------- */
   @media (max-width:640px){
     .topbar{ top:24px; left:20px; right:20px; }
-    .logo-mark{ font-size:12px; }
     .reality-toggle{ display:none; }
     .local-time{ display:none; }
 
-    .brand{ left:20px; top:100px; max-width:78%; }
+    .brand{ left:20px; top:70px; max-width:78%; }
     .brand h1{ font-size:32px; }
 
-    .callout-left, .callout-right, .callout-bottom, .info-card, .core-threads, .note-widget{ display:none; }
-
-    .navToggle{ display:flex; top:24px; right:20px; }
-
-    .stage nav{
-      position:absolute; top:60px; right:20px; left:auto; margin-top:0; z-index:19;
-      align-items:flex-end;
-      background:rgba(255,255,255,0.95); border:1px solid var(--ink-line);
-      padding:0 18px; border-radius:2px;
-      max-height:0; overflow:hidden; opacity:0;
-      transition:max-height .3s ease, opacity .3s ease, padding .3s ease;
-    }
-    .stage nav.open{ max-height:280px; opacity:1; padding:14px 18px; }
-    nav a{ font-size:17px; padding:7px 0; }
+    .callout-left, .callout-right, .callout-bottom, .callout-top, .info-card, .core-threads, .note-widget{ display:none; }
 
     .scrollHint{ bottom:60px; font-size:9px; }
     .scrollHint .bar{ height:18px; }
@@ -307,7 +287,6 @@
       </div>
 
       <div class="topbar">
-        <div class="logo-mark">디자인 연구실</div>
         <button class="reality-toggle" id="realityToggle" type="button">
           <span class="dot"></span> 관점 전환
         </button>
@@ -317,18 +296,15 @@
         </div>
       </div>
 
-      <button class="navToggle" id="navToggle" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
-      <nav id="navMenu">
-        <a href="#">대화하기</a>
-        <a href="#">스킬</a>
-        <a href="#">디자인</a>
-        <a href="#">etc</a>
-      </nav>
-
       <div class="brand">
         <h1>디자인<br>연구실.</h1>
+      </div>
+
+      <div class="callout-top">
+        <span class="node"></span>
+        <span class="seg1"></span>
+        <span class="seg2"></span>
+        <a href="#">스킬</a>
       </div>
 
       <div class="callout callout-left">
@@ -466,20 +442,6 @@
   const noteClose = document.getElementById('noteClose');
   noteClose?.addEventListener('click', () => {
     noteWidget?.classList.add('hidden');
-  });
-
-  // mobile hamburger menu toggle
-  const navToggle = document.getElementById('navToggle');
-  const navMenu = document.getElementById('navMenu');
-  navToggle.addEventListener('click', () => {
-    navToggle.classList.toggle('open');
-    navMenu.classList.toggle('open');
-  });
-  navMenu.querySelectorAll('a').forEach((a) => {
-    a.addEventListener('click', () => {
-      navToggle.classList.remove('open');
-      navMenu.classList.remove('open');
-    });
   });
 
   // reveal sections smoothly as they scroll into view
