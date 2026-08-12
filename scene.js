@@ -48,7 +48,7 @@ export async function initScene({ canvas, loadingEl }) {
   });
 
   // ---- scroll/wheel to spin the brain horizontally only (drag-to-rotate removed) ----
-  const WHEEL_ROTATE_SPEED = 0.5; // tweak to taste — higher = faster spin per scroll tick
+  const WHEEL_ROTATE_SPEED = 0.8; // tweak to taste — higher = faster spin per scroll tick
 
   window.addEventListener('wheel', (e) => {
     e.preventDefault();
