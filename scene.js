@@ -18,7 +18,9 @@ export async function initScene({ canvas, loadingEl }) {
     0.1,
     100
   );
-  camera.position.set(0, 0, 7.4);
+  // y is nudged down slightly so the brain sits a bit higher in frame
+  // (~10% of the visible frame height at the brain's depth)
+  camera.position.set(0, -0.48, 7.4);
 
   // key + rim + fill — no single light washes the whole surface flat
   const keyLight = new THREE.DirectionalLight(0x8cecff, 1.3);
