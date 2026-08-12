@@ -28,7 +28,7 @@
   .pin-wrap{ position:relative; height:100vh; background:#ffffff; overflow:hidden; }
   .pin-inner{ width:100%; height:100vh; overflow:hidden; background:#ffffff; }
 
-  canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; transform:translateY(-10%); }
 
   .loading{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -89,8 +89,8 @@
   .anno-top .flat, .anno-right .flat{ left:-108px; top:57px; width:55px; }
   .anno-top .node, .anno-right .node{ left:-163px; top:51px; }
 
-  .anno-top{ left:771px; top:157px; width:222px; }
-  .anno-right{ left:1112px; top:301px; width:208px; }
+  .anno-top{ left:59%; top:20.5%; width:222px; }
+  .anno-right{ left:78%; top:39.3%; width:208px; }
 
   /* etc — node sits to the lower-right of the underline (brain is right):
      anchor at the RIGHT corner, diag runs down-right */
@@ -98,7 +98,7 @@
   .anno-etc .diag{ left:0; top:0; width:122px; transform:rotate(28deg); }
   .anno-etc .flat{ left:106px; top:57px; width:66px; }
   .anno-etc .node{ left:161px; top:51px; }
-  .anno-etc{ left:199px; top:455px; width:216px; }
+  .anno-etc{ left:13.2%; top:59.5%; width:216px; }
 
   /* ---- bottom-right: "not a studio" note widget ---- */
   .note-widget{
