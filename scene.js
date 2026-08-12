@@ -45,32 +45,15 @@ export async function initScene({ canvas, loadingEl }) {
     brain.setMouse(nx, ny);
   });
 
-  // ---- click-and-drag to spin the brain directly, like grabbing a globe ----
-  let dragging = false;
-  let lastX = 0, lastY = 0;
+  // ---- scroll/wheel to spin the brain horizontally only (drag-to-rotate removed) ----
+  const WHEEL_ROTATE_SPEED = 0.5; // tweak to taste — higher = faster spin per scroll tick
 
-  canvas.addEventListener('pointerdown', (e) => {
-    dragging = true;
-    lastX = e.clientX;
-    lastY = e.clientY;
-    canvas.style.cursor = 'grabbing';
-  });
-
-  window.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - lastX;
-    const dy = e.clientY - lastY;
-    lastX = e.clientX;
-    lastY = e.clientY;
-    brain.addDragRotation(dx, dy);
-  });
-
-  window.addEventListener('pointerup', () => {
-    dragging = false;
-    canvas.style.cursor = 'grab';
-  });
-
-  canvas.style.cursor = 'grab';
+  window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    // deltaY (the normal vertical scroll amount) drives a horizontal (yaw-only) spin;
+    // dy is always 0 so the brain never tilts up/down from scrolling.
+    brain.addDragRotation(e.deltaY * WHEEL_ROTATE_SPEED, 0);
+  }, { passive: false });
 
   function onResize() {
     const w = window.innerWidth, h = window.innerHeight;
