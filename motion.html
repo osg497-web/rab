@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>스킬 — 디자인 연구실</title>
+<title>모션 그래픽 — 디자인 연구실</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -48,30 +48,11 @@
     padding:20px 43px 48px;
   }
 
-  .content{ position:relative; z-index:5; padding:0 43px 160px; }
-
-  .card-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;
-  }
-  .card-link{ display:block; color:inherit; text-decoration:none; }
-  .card{
-    border:1px solid var(--ink-line); background:rgba(255,255,255,0.6);
-    transition:border-color .3s ease;
-  }
-  .card-link:hover .card{ border-color:var(--ink); }
-  .card-thumb{
-    aspect-ratio:4/3; border-bottom:1px solid var(--ink-line);
-    background-image:
-      repeating-linear-gradient(45deg, rgba(16,16,20,0.05) 0 1px, transparent 1px 9px);
-    display:flex; align-items:center; justify-content:center;
-    font-size:11px; letter-spacing:0.08em; color:var(--ink-45);
-  }
-  .card-body{ padding:16px; }
-  .card-title{ font-weight:700; font-size:15px; margin-bottom:6px; }
-  .card-desc{ font-size:12px; line-height:1.6; color:var(--ink-70); }
-  .card-tag{
-    display:inline-block; margin-top:12px; font-size:11px; color:var(--ink-45);
-    border:1px solid var(--ink-line); padding:3px 8px;
+  /* content grows naturally with the page — no fixed height, scrolls normally */
+  .content{ position:relative; z-index:5; padding:0 43px 200px; min-height:60vh; }
+  .placeholder{
+    font-size:13px; color:var(--ink-45); letter-spacing:0.04em;
+    border:1px dashed var(--ink-line); padding:60px 40px; text-align:center;
   }
 </style>
 </head>
@@ -86,44 +67,13 @@
 </div>
 
 <div class="top-bar">
-  <a class="back-link" href="index.html">← 디자인 연구실</a>
+  <a class="back-link" href="skill.html">← 스킬</a>
 </div>
 
-<h1 class="page-title">스킬</h1>
+<h1 class="page-title">모션 그래픽</h1>
 
 <div class="content">
-  <div class="card-grid">
-    <a class="card-link" href="illust.html">
-      <div class="card">
-        <div class="card-thumb">PROJECT 01</div>
-        <div class="card-body">
-          <div class="card-title">일러스트</div>
-          <p class="card-desc">그래픽 모티프와 캐릭터를 활용한<br>일러스트레이션 작업입니다.</p>
-          <span class="card-tag">Illustrator</span>
-        </div>
-      </div>
-    </a>
-    <a class="card-link" href="photoshop.html">
-      <div class="card">
-        <div class="card-thumb">PROJECT 02</div>
-        <div class="card-body">
-          <div class="card-title">포토샵</div>
-          <p class="card-desc">이미지 합성과 리터칭 등<br>포토샵을 활용한 작업입니다.</p>
-          <span class="card-tag">Photoshop</span>
-        </div>
-      </div>
-    </a>
-    <a class="card-link" href="motion.html">
-      <div class="card">
-        <div class="card-thumb">PROJECT 03</div>
-        <div class="card-body">
-          <div class="card-title">모션 그래픽</div>
-          <p class="card-desc">브랜드 경험을 확장하는<br>모션 및 인터랙션 작업입니다.</p>
-          <span class="card-tag">Motion</span>
-        </div>
-      </div>
-    </a>
-  </div>
+  <div class="placeholder">내용 준비 중입니다.</div>
 </div>
 
 </body>
