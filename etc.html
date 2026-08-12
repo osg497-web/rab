@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>etc — 디자인 연구실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ background:#ffffff; color:#101014; }
+  body{ font-family:'Pretendard','Almarai',sans-serif; min-height:100vh; position:relative; }
+
+  :root{
+    --ink:#101014;
+    --ink-70:rgba(16,16,20,0.7);
+    --ink-45:rgba(16,16,20,0.45);
+    --ink-line:rgba(16,16,20,0.2);
+    --ink-line-soft:rgba(16,16,20,0.08);
+  }
+
+  .grid-lines{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .grid-lines .v-line{ position:absolute; top:0; bottom:0; width:1px; background:var(--ink-line-soft); }
+  .grid-lines .h-line{ position:absolute; left:0; right:0; height:1px; background:var(--ink-line-soft); }
+  .grid-lines .cross{ position:absolute; width:10px; height:10px; margin:-5px; }
+  .grid-lines .cross::before,.grid-lines .cross::after{ content:''; position:absolute; background:var(--ink-line); }
+  .grid-lines .cross::before{ left:50%; top:0; bottom:0; width:1px; margin-left:-0.5px; }
+  .grid-lines .cross::after{ top:50%; left:0; right:0; height:1px; margin-top:-0.5px; }
+
+  .top-bar{
+    position:relative; z-index:5; display:flex; align-items:center; justify-content:space-between;
+    padding:28px 43px;
+  }
+  .back-link{
+    font-size:12px; letter-spacing:0.03em; color:var(--ink-70); text-decoration:none;
+    border:1px solid var(--ink-line); padding:6px 12px; transition:border-color .3s ease, color .3s ease;
+  }
+  .back-link:hover{ border-color:var(--ink); color:var(--ink); }
+
+  .page-title{
+    position:relative; z-index:5;
+    font-size:56px; font-weight:800; line-height:1.15;
+    padding:20px 43px 40px;
+  }
+
+  .content{ position:relative; z-index:5; padding:0 43px 160px; min-height:40vh; }
+  .placeholder{
+    font-size:13px; color:var(--ink-45); letter-spacing:0.04em;
+    border:1px dashed var(--ink-line); padding:40px; text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-lines" aria-hidden="true">
+  <span class="v-line" style="left:32%"></span>
+  <span class="v-line" style="left:68%"></span>
+  <span class="h-line" style="top:50%"></span>
+  <span class="cross" style="left:32%; top:50%"></span>
+  <span class="cross" style="left:68%; top:50%"></span>
+</div>
+
+<div class="top-bar">
+  <a class="back-link" href="index.html">← 디자인 연구실</a>
+</div>
+
+<h1 class="page-title">etc</h1>
+
+<div class="content">
+  <div class="placeholder">준비 중입니다.</div>
+</div>
+
+</body>
+</html>
