@@ -8,10 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
   html,body{ background:#020304; color:#EAF6FF; }
-  body{ font-family:'Almarai', sans-serif; }
+  body{ font-family:'Pretendard', 'Almarai', sans-serif; }
 
   :root{
     --ink:#101014;
@@ -23,18 +24,11 @@
     --accent:#1c4fd6;
   }
 
-  /* ---- pinned scroll-scrub zone: the brain stays fixed on screen while
-     scroll position drives its rotation and crossfades the text over it ---- */
-  .pin-wrap{ position:relative; height:280vh; background:#ffffff; }
-  .pin-inner{ position:sticky; top:0; width:100%; height:100vh; overflow:hidden; background:#ffffff; }
+  /* ---- single fixed-height hero, no scrolling ---- */
+  .pin-wrap{ position:relative; height:100vh; background:#ffffff; overflow:hidden; }
+  .pin-inner{ width:100%; height:100vh; overflow:hidden; background:#ffffff; }
 
   canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
-
-  .dissolve{
-    position:absolute; inset:0; z-index:6; pointer-events:none;
-    background:#020304; opacity:0;
-    backdrop-filter:blur(0px);
-  }
 
   .loading{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -55,37 +49,25 @@
   .grid-lines .cross::before{ left:50%; top:0; bottom:0; width:1px; margin-left:-0.5px; }
   .grid-lines .cross::after{ top:50%; left:0; right:0; height:1px; margin-top:-0.5px; }
 
-  /* ---- top bar: reality toggle / local time ---- */
-  .topbar{
-    position:absolute; top:40px; left:52px; right:52px; z-index:5;
-    display:grid; grid-template-columns:1fr auto 1fr; align-items:flex-start;
-  }
-  .reality-toggle{
-    grid-column:2; justify-self:center;
-    display:flex; align-items:center; gap:8px;
-    background:rgba(255,255,255,0.6); border:1px solid var(--ink-line); color:var(--ink-70);
-    font-family:'Almarai',sans-serif; font-size:11px; letter-spacing:0.1em; padding:8px 14px;
-    cursor:pointer; transition:border-color .3s ease, color .3s ease;
-  }
-  .reality-toggle:hover{ border-color:var(--ink); color:var(--ink); }
-  .reality-toggle .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px rgba(28,79,214,0.5); }
-  .local-time{ grid-column:3; justify-self:end; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
-  .tz-label{ font-size:9px; letter-spacing:0.18em; color:var(--ink-45); }
-  .tz-value{ font-size:13px; letter-spacing:0.05em; color:var(--ink-70); }
-
   /* ---- big headline, upper-left ---- */
-  .brand{ position:absolute; left:52px; top:92px; z-index:5; max-width:600px; }
+  .brand{ position:absolute; left:43px; top:46px; z-index:5; max-width:600px; }
   .brand h1{
-    font-family:'Galmuri14','Galmuri11',monospace;
-    font-size:80px; font-weight:900; color:var(--ink); line-height:1.05;
+    font-family:'Pretendard','Almarai',sans-serif;
+    font-size:65px; font-weight:800; color:var(--ink); line-height:1.25;
   }
 
-  /* ---- annotations: bold title + underline, connected to a node on the
-     brain by a single line; description sits below in normal flow ---- */
+  /* ---- annotations: bold title + underline (title's own border-bottom),
+     then a diagonal segment, then a flat segment, ending at a square node.
+     ".dogleg" is a zero-size anchor pinned via bottom:0 (and left:0 or
+     left:100%) directly on the title's border-bottom corner — no
+     percentage-of-auto-height math involved, so it can't drift. diag/flat/
+     node are all positioned relative to THIS single anchor, so their
+     coordinates share one consistent origin. ---- */
   .anno{ position:absolute; z-index:5; width:230px; pointer-events:none; }
   .anno-title{
-    font-family:'Almarai',sans-serif; font-weight:700; font-size:15px;
-    color:var(--ink); padding-bottom:8px; margin-bottom:8px; border-bottom:1.5px solid var(--ink);
+    position:relative;
+    font-family:'Pretendard','Almarai',sans-serif; font-weight:700; font-size:15px;
+    color:var(--ink); padding-bottom:8px; margin-bottom:8px; border-bottom:2px solid var(--ink);
   }
   .anno-desc{ font-size:12px; line-height:1.6; color:var(--ink-70); margin:0; }
   .anno .node{
@@ -94,38 +76,43 @@
     background:rgba(255,255,255,0.85);
   }
   .anno .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
-  .anno .connector{ position:absolute; height:1.5px; background:var(--ink); transform-origin:left center; }
+  .dogleg{ position:absolute; bottom:0; width:0; height:0; }
+  .dogleg .diag, .dogleg .flat{ position:absolute; height:2px; background:var(--ink); }
+  .dogleg .diag{ transform-origin:left center; }
 
-  /* 디자인 실험 — sits above the brain, short line down to the node */
-  .anno-top{ left:47%; top:9%; }
-  .anno-top .connector{ left:0; top:31px; width:60px; transform:rotate(56deg); }
-  .anno-top .node{ left:-46px; top:74px; }
+  /* 디자인 실험 & 스킬 — node sits to the lower-left of the underline (brain
+     is left/below): anchor at the LEFT corner, diag runs down-left */
+  .anno-top .dogleg, .anno-right .dogleg{ left:0; }
+  .anno-top .diag, .anno-right .diag{ left:0; top:0; width:122px; transform:rotate(152deg); }
+  .anno-top .flat, .anno-right .flat{ left:-108px; top:57px; width:55px; }
+  .anno-top .node, .anno-right .node{ left:-163px; top:51px; }
 
-  /* 스킬 — sits right of the brain, line angles down-left to the node */
-  .anno-right{ right:6%; top:34%; }
-  .anno-right .connector{ left:-96px; top:2px; width:100px; transform:rotate(20deg); }
-  .anno-right .node{ left:-102px; top:26px; }
+  .anno-top{ left:771px; top:157px; width:222px; }
+  .anno-right{ left:1112px; top:301px; width:208px; }
 
-  /* etc — sits lower-left of the brain, line angles up-right to the node */
-  .anno-etc{ left:6%; bottom:14%; }
-  .anno-etc .connector{ right:-86px; top:6px; width:90px; transform:rotate(-14deg); }
-  .anno-etc .node{ right:-92px; top:15px; }
+  /* etc — node sits to the lower-right of the underline (brain is right):
+     anchor at the RIGHT corner, diag runs down-right */
+  .anno-etc .dogleg{ left:100%; }
+  .anno-etc .diag{ left:0; top:0; width:122px; transform:rotate(28deg); }
+  .anno-etc .flat{ left:106px; top:57px; width:66px; }
+  .anno-etc .node{ left:161px; top:51px; }
+  .anno-etc{ left:199px; top:455px; width:216px; }
 
   /* ---- bottom-right: "not a studio" note widget ---- */
   .note-widget{
-    position:absolute; right:52px; bottom:44px; z-index:5; width:300px;
+    position:absolute; right:44px; bottom:35px; z-index:5; width:224px;
     border:1px solid var(--ink-line); background:rgba(255,255,255,0.8); backdrop-filter:blur(6px);
     transition:opacity .3s ease, transform .3s ease;
   }
   .note-widget.hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
   .note-head{
     display:flex; justify-content:space-between; align-items:center; gap:10px;
-    padding:10px 14px; border-bottom:1px solid var(--ink-line);
+    padding:6px 14px; border-bottom:1px solid var(--ink-line);
     font-size:11px; letter-spacing:0.03em; color:var(--ink);
   }
   .note-close{ background:none; border:none; color:var(--ink-45); font-size:15px; line-height:1; cursor:pointer; }
   .note-close:hover{ color:var(--ink); }
-  .note-body{ padding:14px; font-size:12px; line-height:1.75; color:var(--ink-70); }
+  .note-body{ padding:14px; font-size:12px; line-height:1.2; color:var(--ink-70); }
   .note-links{ display:flex; gap:8px; padding:0 14px 14px; }
   .note-links a{
     border:1px solid var(--ink-line); padding:6px 12px; font-size:11px;
@@ -133,106 +120,12 @@
   }
   .note-links a:hover{ border-color:var(--ink); color:var(--ink); }
 
-  .scrollHint{
-    position:absolute; left:50%; bottom:200px; transform:translateX(-50%); z-index:5;
-    font-size:11px; letter-spacing:0.18em; color:var(--ink-45);
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    animation:hintFloat 2.4s ease-in-out infinite;
-  }
-  .scrollHint .bar{ width:1px; height:26px; background:linear-gradient(to bottom, var(--ink-line), transparent); }
-  @keyframes hintFloat{ 0%,100%{ transform:translateY(0); opacity:.7; } 50%{ transform:translateY(6px); opacity:1; } }
-
-  /* ---- "change reality" easter egg triggered by the toggle button ---- */
-  .pin-inner{ transition:filter .5s ease; }
-  body.alt-reality .pin-inner{ filter:invert(1) hue-rotate(180deg); }
-
-  /* second text frame, crossfades in over the same pinned brain as you scroll */
-  .frame2{
-    position:absolute; inset:0; z-index:4; pointer-events:none;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; opacity:0;
-  }
-  .frame2 .eyebrow{
-    display:inline-block; background:rgba(255,255,255,0.7); color:var(--accent);
-    font-size:11px; letter-spacing:0.14em; padding:4px 10px; margin-bottom:20px;
-    border:1px solid var(--ink-line);
-  }
-  .frame2 h2{
-    font-family:'Galmuri14','Galmuri11',monospace;
-    font-size:40px; line-height:1.35; max-width:720px; color:var(--ink);
-  }
-  .frame2 p{
-    margin-top:20px; font-size:13px; color:var(--ink-45); max-width:480px; line-height:1.6;
-  }
-
   /* ---------------- mobile ---------------- */
   @media (max-width:640px){
-    .topbar{ top:24px; left:20px; right:20px; }
-    .reality-toggle{ display:none; }
-    .local-time{ display:none; }
-
     .brand{ left:20px; top:70px; max-width:78%; }
     .brand h1{ font-size:32px; }
 
     .anno, .note-widget{ display:none; }
-
-    .scrollHint{ bottom:60px; font-size:9px; }
-    .scrollHint .bar{ height:18px; }
-  }
-
-  /* ---------------- sections below the hero — fade/slide in on scroll ---------------- */
-  .reveal-section{
-    position:relative; z-index:2;
-    min-height:100vh;
-    padding:120px 52px;
-    display:flex; flex-direction:column; justify-content:center;
-    background:#020304;
-    border-top:1px solid rgba(111,227,255,0.12);
-    opacity:0; transform:translateY(32px);
-    transition:opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);
-  }
-  .reveal-section.in-view{ opacity:1; transform:translateY(0); }
-
-  .section-label{
-    display:flex; align-items:center; gap:12px;
-    font-size:11px; letter-spacing:0.18em; color:rgba(200,230,255,0.45);
-    margin-bottom:18px;
-  }
-  .section-label::after{ content:''; flex:1; max-width:120px; height:1px; background:rgba(111,227,255,0.25); }
-  .reveal-section h2{
-    font-family:'Galmuri14','Galmuri11',monospace;
-    font-size:40px; margin-bottom:44px; color:#EAF6FF;
-  }
-
-  /* corner tick marks, echoing the hero's blueprint grid */
-  .reveal-section{ position:relative; }
-  .reveal-section::before, .reveal-section::after{
-    content:''; position:absolute; width:9px; height:9px; opacity:0.5;
-  }
-  .reveal-section::before{ top:24px; left:24px; border-top:1px solid rgba(111,227,255,0.5); border-left:1px solid rgba(111,227,255,0.5); }
-  .reveal-section::after{ bottom:24px; right:24px; border-bottom:1px solid rgba(111,227,255,0.5); border-right:1px solid rgba(111,227,255,0.5); }
-
-  .work-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1000px; }
-  .work-card{
-    position:relative;
-    border:1px solid rgba(111,227,255,0.18); padding:28px 22px; border-radius:2px;
-    transition:border-color .3s ease, transform .3s ease;
-  }
-  .work-card:hover{ border-color:rgba(111,227,255,0.55); transform:translateY(-4px); }
-  .work-card .tag{ font-size:11px; color:rgba(200,230,255,0.5); letter-spacing:0.08em; }
-  .work-card h3{ font-family:'Galmuri14',monospace; font-size:22px; margin-top:12px; color:#EAF6FF; }
-
-  .contact-text{ color:rgba(200,230,255,0.6); font-size:14px; margin-bottom:18px; }
-  .contact-link{
-    color:#8fe9ff; font-size:20px; text-decoration:none; border-bottom:1px solid rgba(143,233,255,0.4);
-    width:fit-content; padding-bottom:4px; transition:border-color .3s ease;
-  }
-  .contact-link:hover{ border-color:#8fe9ff; }
-
-  @media (max-width:640px){
-    .reveal-section{ padding:80px 20px; }
-    .reveal-section h2{ font-size:26px; }
-    .work-grid{ grid-template-columns:1fr; }
   }
 </style>
 </head>
@@ -254,39 +147,23 @@
         <span class="cross" style="left:94%; top:96%"></span>
       </div>
 
-      <div class="topbar">
-        <button class="reality-toggle" id="realityToggle" type="button">
-          <span class="dot"></span> 관점 전환
-        </button>
-        <div class="local-time">
-          <span class="tz-label">LOCAL TIME</span>
-          <span class="tz-value" id="timeValue">SEL --:-- --</span>
-        </div>
-      </div>
-
       <div class="brand">
-        <h1>디자인<br>연구실.</h1>
+        <h1>디자인<br>연구실</h1>
       </div>
 
       <div class="anno anno-top">
-        <div class="anno-title">디자인 실험</div>
+        <div class="anno-title">디자인 실험<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
         <p class="anno-desc">주저없는 디자인을 실험하는 공간</p>
-        <span class="connector"></span>
-        <span class="node"></span>
       </div>
 
       <div class="anno anno-right">
-        <div class="anno-title">스킬</div>
+        <div class="anno-title">스킬<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
         <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
-        <span class="connector"></span>
-        <span class="node"></span>
       </div>
 
       <div class="anno anno-etc">
-        <div class="anno-title">etc</div>
+        <div class="anno-title">etc<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
         <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
-        <span class="connector"></span>
-        <span class="node"></span>
       </div>
 
       <div class="note-widget" id="noteWidget">
@@ -303,48 +180,9 @@
           <a href="mailto:osg497@gmail.com">EMAIL</a>
         </div>
       </div>
-
-      <div class="scrollHint">
-        <span>SCROLL</span>
-        <span class="bar"></span>
-      </div>
     </div>
-
-    <div class="frame2" id="frame2">
-      <span class="eyebrow">OUR VISION</span>
-      <h2>데이터를 넘어, 감각으로<br>기억되는 브랜드를 만듭니다</h2>
-      <p>보이는 것과 느껴지는 것 사이, 그 틈을 설계하는 디자인 연구실이에요.</p>
-    </div>
-
-    <div class="dissolve" id="dissolve"></div>
   </div>
 </div>
-
-<section class="reveal-section" id="work">
-  <span class="section-label">01 — Work</span>
-  <h2>최근 작업들</h2>
-  <div class="work-grid">
-    <article class="work-card">
-      <span class="tag">Corporate Branding</span>
-      <h3>Willog</h3>
-    </article>
-    <article class="work-card">
-      <span class="tag">Spatial Branding</span>
-      <h3>소운탕</h3>
-    </article>
-    <article class="work-card">
-      <span class="tag">Product Branding</span>
-      <h3>OHi</h3>
-    </article>
-  </div>
-</section>
-
-<section class="reveal-section" id="contact">
-  <span class="section-label">02 — Contact</span>
-  <h2>대화하기</h2>
-  <p class="contact-text">궁금한 게 있으면 언제든 편하게 연락해주세요.</p>
-  <a class="contact-link" href="mailto:osg497@gmail.com">osg497@gmail.com</a>
-</section>
 
 <script>
   // safety net: if nothing has progressed past 0% after a few seconds,
@@ -364,39 +202,12 @@
     if (el) el.innerHTML = `스크립트 에러: ${e.message || '알 수 없는 오류'}<br>콘솔(F12)을 확인해주세요.`;
   });
 
-  // live local time (Seoul)
-  const timeValueEl = document.getElementById('timeValue');
-  function updateClock() {
-    if (!timeValueEl) return;
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: true,
-    }).format(new Date());
-    timeValueEl.textContent = `SEL ${parts}`;
-  }
-  updateClock();
-  setInterval(updateClock, 30000);
-
-  // "관점 전환" — playful reality-toggle easter egg
-  const realityToggle = document.getElementById('realityToggle');
-  realityToggle?.addEventListener('click', () => {
-    document.body.classList.toggle('alt-reality');
-  });
-
   // note widget close
   const noteWidget = document.getElementById('noteWidget');
   const noteClose = document.getElementById('noteClose');
   noteClose?.addEventListener('click', () => {
     noteWidget?.classList.add('hidden');
   });
-
-  // reveal sections smoothly as they scroll into view
-  const revealSections = document.querySelectorAll('.reveal-section');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) entry.target.classList.add('in-view');
-    });
-  }, { threshold: 0.2 });
-  revealSections.forEach((el) => io.observe(el));
 </script>
 <script type="importmap">
 {
@@ -418,40 +229,9 @@
     if (el) el.textContent = '모델을 불러오지 못했어요 — 콘솔을 확인해주세요.';
   });
 
-  if (app && app.brain) {
-    const pinWrap = document.querySelector('.pin-wrap');
-    const stage = document.querySelector('.stage');
-    const frame2 = document.getElementById('frame2');
-    const dissolve = document.getElementById('dissolve');
-
-    function clamp01(v) { return Math.min(1, Math.max(0, v)); }
-
-    function onScroll() {
-      const rect = pinWrap.getBoundingClientRect();
-      const total = pinWrap.offsetHeight - window.innerHeight;
-      const scrolled = -rect.top;
-      const p = clamp01(total > 0 ? scrolled / total : 0);
-
-      // 0.00–0.30: hero text visible, brain settles into its first pose
-      // 0.30–0.55: hero text fades out, "OUR VISION" frame fades in
-      // 0.55–0.85: vision frame holds, brain keeps rotating
-      // 0.85–1.00: everything dissolves into the next section
-      const heroOpacity = 1 - clamp01((p - 0.05) / 0.25);
-      const frame2In = clamp01((p - 0.30) / 0.25);
-      const frame2Out = clamp01((p - 0.80) / 0.18);
-      const frame2Opacity = frame2In * (1 - frame2Out);
-      const dissolveOpacity = clamp01((p - 0.85) / 0.15);
-
-      stage.style.opacity = heroOpacity;
-      frame2.style.opacity = frame2Opacity;
-      dissolve.style.opacity = dissolveOpacity;
-      dissolve.style.backdropFilter = `blur(${dissolveOpacity * 14}px)`;
-
-      app.brain.setPinProgress(p);
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+  if (app && app.brain && typeof app.brain.setPinProgress === 'function') {
+    // static hero, no scroll — just settle the brain into its resting pose
+    app.brain.setPinProgress(0);
   }
 </script>
 </body>
