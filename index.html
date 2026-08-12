@@ -92,7 +92,7 @@
   .anno-top .flat, .anno-right .flat{ left:-163px; top:61px; width:110px; }
   .anno-top .node, .anno-right .node{ left:-163px; top:55px; }
 
-  .anno-top{ left:59%; top:20.5%; width:222px; }
+  .anno-top{ left:69%; top:15.5%; width:222px; }
   .anno-right{ left:78%; top:39.3%; width:208px; }
 
   /* etc — node sits to the lower-right of the underline (brain is right):
@@ -105,22 +105,22 @@
 
   /* ---- bottom-right: "not a studio" note widget ---- */
   .note-widget{
-    position:absolute; right:44px; bottom:35px; z-index:5; width:224px;
+    position:absolute; right:44px; bottom:35px; z-index:5; width:269px;
     border:1px solid var(--ink-line); background:rgba(255,255,255,0.8); backdrop-filter:blur(6px);
     transition:opacity .3s ease, transform .3s ease;
   }
   .note-widget.hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
   .note-head{
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-    padding:6px 14px; border-bottom:1px solid var(--ink-line);
-    font-size:11px; letter-spacing:0.03em; color:var(--ink);
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:7px 17px; border-bottom:1px solid var(--ink-line);
+    font-size:13px; letter-spacing:0.03em; color:var(--ink);
   }
-  .note-close{ background:none; border:none; color:var(--ink-45); font-size:15px; line-height:1; cursor:pointer; }
+  .note-close{ background:none; border:none; color:var(--ink-45); font-size:18px; line-height:1; cursor:pointer; }
   .note-close:hover{ color:var(--ink); }
-  .note-body{ padding:14px; font-size:12px; line-height:1.2; color:var(--ink-70); }
-  .note-links{ display:flex; gap:8px; padding:0 14px 14px; }
+  .note-body{ padding:17px; font-size:14px; line-height:1.2; color:var(--ink-70); }
+  .note-links{ display:flex; gap:10px; padding:0 17px 17px; }
   .note-links a{
-    border:1px solid var(--ink-line); padding:6px 12px; font-size:11px;
+    border:1px solid var(--ink-line); padding:7px 14px; font-size:13px;
     color:var(--ink-70); text-decoration:none; transition:border-color .3s ease, color .3s ease;
   }
   .note-links a:hover{ border-color:var(--ink); color:var(--ink); }
