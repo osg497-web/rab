@@ -53,7 +53,7 @@
   .brand{ position:absolute; left:43px; top:46px; z-index:5; max-width:600px; }
   .brand h1{
     font-family:'Pretendard','Almarai',sans-serif;
-    font-size:65px; font-weight:800; color:var(--ink); line-height:1.25;
+    font-size:85px; font-weight:800; color:var(--ink); line-height:1.25;
   }
 
   /* ---- annotations: bold title + underline (title's own border-bottom),
@@ -85,9 +85,9 @@
   /* 디자인 실험 & 스킬 — node sits to the lower-left of the underline (brain
      is left/below): anchor at the LEFT corner, diag runs down-left */
   .anno-top .dogleg, .anno-right .dogleg{ left:0; }
-  .anno-top .diag, .anno-right .diag{ left:0; top:0; width:122px; transform:rotate(152deg); }
-  .anno-top .flat, .anno-right .flat{ left:-108px; top:57px; width:55px; }
-  .anno-top .node, .anno-right .node{ left:-163px; top:51px; }
+  .anno-top .diag, .anno-right .diag{ left:0; top:0; width:81px; transform:rotate(131deg); }
+  .anno-top .flat, .anno-right .flat{ left:-163px; top:61px; width:110px; }
+  .anno-top .node, .anno-right .node{ left:-163px; top:55px; }
 
   .anno-top{ left:59%; top:20.5%; width:222px; }
   .anno-right{ left:78%; top:39.3%; width:208px; }
@@ -122,12 +122,38 @@
   }
   .note-links a:hover{ border-color:var(--ink); color:var(--ink); }
 
+  /* ---- right-side sliding drawer (스킬 card panel) ---- */
+  .drawer-backdrop{
+    position:fixed; inset:0; z-index:50; background:rgba(2,3,4,0.35);
+    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .35s ease;
+  }
+  .drawer-backdrop.open{ opacity:1; pointer-events:auto; }
+
+  .drawer-panel{
+    position:fixed; top:0; right:0; height:100vh; width:50vw; z-index:51;
+    background:#ffffff; box-shadow:-12px 0 40px rgba(0,0,0,0.18);
+    transform:translateX(100%); transition:transform .4s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .drawer-panel.open{ transform:translateX(0); }
+  .drawer-close{
+    position:absolute; top:20px; right:20px; z-index:2; width:36px; height:36px;
+    border-radius:50%; border:1px solid var(--ink-line); background:#ffffff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    font-size:16px; line-height:1; color:var(--ink-70); transition:border-color .3s ease, color .3s ease;
+  }
+  .drawer-close:hover{ color:var(--ink); border-color:var(--ink); }
+  .drawer-panel iframe{ flex:1; width:100%; height:100%; border:0; display:block; }
+
   /* ---------------- mobile ---------------- */
   @media (max-width:640px){
     .brand{ left:20px; top:70px; max-width:78%; }
     .brand h1{ font-size:32px; }
 
     .anno, .note-widget{ display:none; }
+
+    .drawer-panel{ width:100vw; }
   }
 </style>
 </head>
@@ -186,6 +212,12 @@
   </div>
 </div>
 
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <button class="drawer-close" id="drawerClose" aria-label="닫기">×</button>
+  <iframe id="drawerFrame" src="" title="스킬"></iframe>
+</div>
+
 <script>
   // safety net: if nothing has progressed past 0% after a few seconds,
   // the module script itself likely failed to load (wrong path, or opened via
@@ -209,6 +241,33 @@
   const noteClose = document.getElementById('noteClose');
   noteClose?.addEventListener('click', () => {
     noteWidget?.classList.add('hidden');
+  });
+
+  // 스킬 — open as a right-side sliding drawer instead of navigating away
+  const drawerBackdrop = document.getElementById('drawerBackdrop');
+  const drawerPanel = document.getElementById('drawerPanel');
+  const drawerFrame = document.getElementById('drawerFrame');
+  const drawerClose = document.getElementById('drawerClose');
+  const skillLink = document.querySelector('.anno-right .anno-title a');
+
+  function openDrawer(url) {
+    if (drawerFrame.getAttribute('src') !== url) drawerFrame.setAttribute('src', url);
+    drawerBackdrop.classList.add('open');
+    drawerPanel.classList.add('open');
+  }
+  function closeDrawer() {
+    drawerBackdrop.classList.remove('open');
+    drawerPanel.classList.remove('open');
+  }
+
+  skillLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openDrawer(skillLink.getAttribute('href'));
+  });
+  drawerClose?.addEventListener('click', closeDrawer);
+  drawerBackdrop?.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
   });
 </script>
 <script type="importmap">
