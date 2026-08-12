@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>디자인 연구실</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
   html,body{ background:#020304; color:#EAF6FF; }
-  body{ font-family:'Galmuri9', monospace; }
+  body{ font-family:'Almarai', sans-serif; }
 
   :root{
     --ink:#101014;
@@ -61,7 +64,7 @@
     grid-column:2; justify-self:center;
     display:flex; align-items:center; gap:8px;
     background:rgba(255,255,255,0.6); border:1px solid var(--ink-line); color:var(--ink-70);
-    font-family:'Galmuri9',monospace; font-size:11px; letter-spacing:0.1em; padding:8px 14px;
+    font-family:'Almarai',sans-serif; font-size:11px; letter-spacing:0.1em; padding:8px 14px;
     cursor:pointer; transition:border-color .3s ease, color .3s ease;
   }
   .reality-toggle:hover{ border-color:var(--ink); color:var(--ink); }
@@ -77,71 +80,36 @@
     font-size:80px; font-weight:900; color:var(--ink); line-height:1.05;
   }
 
-  /* ---- annotation callouts pointing at the brain ---- */
-  .callout{ position:absolute; z-index:5; display:flex; font-size:12px; line-height:1.6; color:var(--ink-70); }
-  .callout .node{
-    flex:none; width:10px; height:10px; margin-top:1px;
+  /* ---- annotations: bold title + underline, connected to a node on the
+     brain by a single line; description sits below in normal flow ---- */
+  .anno{ position:absolute; z-index:5; width:230px; pointer-events:none; }
+  .anno-title{
+    font-family:'Almarai',sans-serif; font-weight:700; font-size:15px;
+    color:var(--ink); padding-bottom:8px; margin-bottom:8px; border-bottom:1.5px solid var(--ink);
+  }
+  .anno-desc{ font-size:12px; line-height:1.6; color:var(--ink-70); margin:0; }
+  .anno .node{
+    position:absolute; width:11px; height:11px;
     border:2px solid var(--ink); display:flex; align-items:center; justify-content:center;
-    background:rgba(255,255,255,0.7);
+    background:rgba(255,255,255,0.85);
   }
-  .callout .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
-  .callout .line{ flex:none; background:var(--line-strong); align-self:center; }
-  .callout p{ margin:0; }
+  .anno .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
+  .anno .connector{ position:absolute; height:1.5px; background:var(--ink); transform-origin:left center; }
 
-  .callout-left{ left:6%; top:40%; align-items:center; max-width:280px; }
-  .callout-left .line{ width:64px; height:1.5px; margin:0 12px; }
-  .callout-left p{ order:-1; text-align:right; max-width:190px; }
-  .callout-left{ flex-direction:row; }
+  /* 디자인 실험 — sits above the brain, short line down to the node */
+  .anno-top{ left:47%; top:9%; }
+  .anno-top .connector{ left:0; top:31px; width:60px; transform:rotate(56deg); }
+  .anno-top .node{ left:-46px; top:74px; }
 
-  .callout-right{ right:5%; top:30%; align-items:flex-start; }
-  .callout-right .line{ width:64px; height:1.5px; margin-top:6px; }
+  /* 스킬 — sits right of the brain, line angles down-left to the node */
+  .anno-right{ right:6%; top:34%; }
+  .anno-right .connector{ left:-96px; top:2px; width:100px; transform:rotate(20deg); }
+  .anno-right .node{ left:-102px; top:26px; }
 
-  .callout-bottom{ left:50%; top:64%; transform:translateX(-50%); flex-direction:column; align-items:center; text-align:center; }
-  .callout-bottom .line{ width:1.5px; height:44px; margin:2px 0; }
-
-  .info-card{
-    border:1px solid var(--ink-line); background:rgba(255,255,255,0.75); backdrop-filter:blur(6px);
-    padding:16px 20px; width:250px;
-  }
-  .info-card-head{
-    display:flex; justify-content:space-between; align-items:baseline;
-    padding-bottom:10px; margin-bottom:10px; border-bottom:1px solid var(--ink-line);
-    font-family:'Galmuri14',monospace; font-size:15px; color:var(--ink);
-  }
-  .info-card-head .count{ font-size:10px; letter-spacing:0.08em; color:var(--ink-45); }
-  .info-card-body p{ font-size:12px; line-height:1.75; color:var(--ink-70); margin:0 0 8px; }
-  .info-card-body .arrow{ color:var(--accent); margin-bottom:0; }
-
-  /* ---- new: dogleg callout pointing up from the brain to a "스킬" label ---- */
-  .callout-top{ position:absolute; left:48%; top:16%; z-index:5; width:220px; height:90px; pointer-events:none; }
-  .callout-top .node{
-    position:absolute; left:6px; bottom:8px; width:10px; height:10px;
-    border:2px solid var(--ink); background:rgba(255,255,255,0.7);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .callout-top .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
-  .callout-top .seg1{
-    position:absolute; left:16px; bottom:13px; width:64px; height:1.5px; background:var(--line-strong);
-    transform-origin:left center; transform:rotate(-36deg);
-  }
-  .callout-top .seg2{
-    position:absolute; left:64px; top:30px; width:74px; height:1.5px; background:var(--line-strong);
-  }
-  .callout-top a{
-    position:absolute; left:132px; top:8px;
-    font-size:15px; color:var(--ink-70); text-decoration:none; letter-spacing:0.02em;
-    pointer-events:auto; transition:color .3s ease;
-  }
-  .callout-top a:hover{ color:var(--ink); }
-
-  /* ---- bottom-left: core threads list ---- */
-  .core-threads{ position:absolute; left:52px; bottom:44px; z-index:5; max-width:290px; }
-  .ct-title{ display:block; font-size:11px; letter-spacing:0.1em; color:var(--ink); margin-bottom:14px; }
-  .core-threads ol{ list-style:none; display:flex; flex-direction:column; gap:9px; }
-  .core-threads li{ display:flex; align-items:baseline; gap:10px; font-size:12px; color:var(--ink-70); }
-  .core-threads .num{ flex:none; color:var(--ink-45); font-size:11px; }
-  .core-threads .track{ flex:1; height:1px; background:repeating-linear-gradient(to right, var(--ink-line) 0 3px, transparent 3px 6px); }
-  .core-threads .label{ flex:none; letter-spacing:0.03em; }
+  /* etc — sits lower-left of the brain, line angles up-right to the node */
+  .anno-etc{ left:6%; bottom:14%; }
+  .anno-etc .connector{ right:-86px; top:6px; width:90px; transform:rotate(-14deg); }
+  .anno-etc .node{ right:-92px; top:15px; }
 
   /* ---- bottom-right: "not a studio" note widget ---- */
   .note-widget{
@@ -206,7 +174,7 @@
     .brand{ left:20px; top:70px; max-width:78%; }
     .brand h1{ font-size:32px; }
 
-    .callout-left, .callout-right, .callout-bottom, .callout-top, .info-card, .core-threads, .note-widget{ display:none; }
+    .anno, .note-widget{ display:none; }
 
     .scrollHint{ bottom:60px; font-size:9px; }
     .scrollHint .bar{ height:18px; }
@@ -300,48 +268,25 @@
         <h1>디자인<br>연구실.</h1>
       </div>
 
-      <div class="callout-top">
-        <span class="node"></span>
-        <span class="seg1"></span>
-        <span class="seg2"></span>
-        <a href="#">스킬</a>
-      </div>
-
-      <div class="callout callout-left">
-        <p>디자인 연구실은 내가 멋대로<br>제멋대로 하고싶은거 다 할수있는<br>나만의 공간이야.</p>
-        <span class="line"></span>
+      <div class="anno anno-top">
+        <div class="anno-title">디자인 실험</div>
+        <p class="anno-desc">주저없는 디자인을 실험하는 공간</p>
+        <span class="connector"></span>
         <span class="node"></span>
       </div>
 
-      <div class="callout callout-right">
+      <div class="anno anno-right">
+        <div class="anno-title">스킬</div>
+        <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
+        <span class="connector"></span>
         <span class="node"></span>
-        <span class="line"></span>
-        <div class="info-card">
-          <div class="info-card-head">
-            <span>디자인 연구실</span>
-            <span class="count">BX</span>
-          </div>
-          <div class="info-card-body">
-            <p>BRAND (브랜드)<br>+ EXPERIENCE (경험)</p>
-            <p class="arrow">→ 브랜드를 경험으로 설계하다</p>
-          </div>
-        </div>
       </div>
 
-      <div class="callout callout-bottom">
+      <div class="anno anno-etc">
+        <div class="anno-title">etc</div>
+        <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
+        <span class="connector"></span>
         <span class="node"></span>
-        <span class="line"></span>
-        <p>보는건 자유,<br>판단은 금물.</p>
-      </div>
-
-      <div class="core-threads">
-        <span class="ct-title">[ CORE THREADS OF MY WORK ]</span>
-        <ol>
-          <li><span class="num">01</span><span class="track"></span><span class="label">BRANDING</span></li>
-          <li><span class="num">02</span><span class="track"></span><span class="label">CONTENT DESIGN</span></li>
-          <li><span class="num">03</span><span class="track"></span><span class="label">DESIGN STRATEGY</span></li>
-          <li><span class="num">04</span><span class="track"></span><span class="label">MOTION &amp; VISUAL</span></li>
-        </ol>
       </div>
 
       <div class="note-widget" id="noteWidget">
