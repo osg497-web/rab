@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>디자인 연구실</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ background:#020304; color:#EAF6FF; }
+  body{ font-family:'Almarai', sans-serif; }
+
+  :root{
+    --ink:#101014;
+    --ink-70:rgba(16,16,20,0.7);
+    --ink-45:rgba(16,16,20,0.45);
+    --ink-line:rgba(16,16,20,0.2);
+    --ink-line-soft:rgba(16,16,20,0.08);
+    --line-strong:rgba(16,16,20,0.6);
+    --accent:#1c4fd6;
+  }
+
+  /* ---- single fixed-height hero, no scrolling ---- */
+  .pin-wrap{ position:relative; height:100vh; background:#ffffff; overflow:hidden; }
+  .pin-inner{ width:100%; height:100vh; overflow:hidden; background:#ffffff; }
+
+  canvas#brainCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:12px; letter-spacing:0.12em; color:var(--ink-45); z-index:5;
+  }
+
+  .stage{
+    position:absolute; inset:0; z-index:4; pointer-events:none;
+  }
+  .stage a, .stage button{ pointer-events:auto; }
+
+  /* ---- faint blueprint grid lines, purely decorative ---- */
+  .grid-lines{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .grid-lines .v-line{ position:absolute; top:0; bottom:0; width:1px; background:var(--ink-line-soft); }
+  .grid-lines .h-line{ position:absolute; left:0; right:0; height:1px; background:var(--ink-line-soft); }
+  .grid-lines .cross{ position:absolute; width:10px; height:10px; margin:-5px; }
+  .grid-lines .cross::before,.grid-lines .cross::after{ content:''; position:absolute; background:var(--ink-line); }
+  .grid-lines .cross::before{ left:50%; top:0; bottom:0; width:1px; margin-left:-0.5px; }
+  .grid-lines .cross::after{ top:50%; left:0; right:0; height:1px; margin-top:-0.5px; }
+
+  /* ---- big headline, upper-left ---- */
+  .brand{ position:absolute; left:43px; top:46px; z-index:5; max-width:600px; }
+  .brand h1{
+    font-family:'Almarai',sans-serif;
+    font-size:65px; font-weight:800; color:var(--ink); line-height:1.25;
+  }
+
+  /* ---- annotations: bold title + underline (title's own border-bottom),
+     then a diagonal segment, then a flat segment, ending at a square node.
+     ".dogleg" is a zero-size anchor pinned via bottom:0 (and left:0 or
+     left:100%) directly on the title's border-bottom corner — no
+     percentage-of-auto-height math involved, so it can't drift. diag/flat/
+     node are all positioned relative to THIS single anchor, so their
+     coordinates share one consistent origin. ---- */
+  .anno{ position:absolute; z-index:5; width:230px; pointer-events:none; }
+  .anno-title{
+    position:relative;
+    font-family:'Almarai',sans-serif; font-weight:700; font-size:15px;
+    color:var(--ink); padding-bottom:8px; margin-bottom:8px; border-bottom:2px solid var(--ink);
+  }
+  .anno-desc{ font-size:12px; line-height:1.6; color:var(--ink-70); margin:0; }
+  .anno .node{
+    position:absolute; width:11px; height:11px;
+    border:2px solid var(--ink); display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.85);
+  }
+  .anno .node::before{ content:''; width:4px; height:4px; background:var(--ink); }
+  .dogleg{ position:absolute; bottom:0; width:0; height:0; }
+  .dogleg .diag, .dogleg .flat{ position:absolute; height:2px; background:var(--ink); }
+  .dogleg .diag{ transform-origin:left center; }
+
+  /* 디자인 실험 & 스킬 — node sits to the lower-left of the underline (brain
+     is left/below): anchor at the LEFT corner, diag runs down-left */
+  .anno-top .dogleg, .anno-right .dogleg{ left:0; }
+  .anno-top .diag, .anno-right .diag{ left:0; top:0; width:122px; transform:rotate(152deg); }
+  .anno-top .flat, .anno-right .flat{ left:-108px; top:57px; width:55px; }
+  .anno-top .node, .anno-right .node{ left:-163px; top:51px; }
+
+  .anno-top{ left:771px; top:157px; width:222px; }
+  .anno-right{ left:1112px; top:301px; width:208px; }
+
+  /* etc — node sits to the lower-right of the underline (brain is right):
+     anchor at the RIGHT corner, diag runs down-right */
+  .anno-etc .dogleg{ left:100%; }
+  .anno-etc .diag{ left:0; top:0; width:122px; transform:rotate(28deg); }
+  .anno-etc .flat{ left:106px; top:57px; width:66px; }
+  .anno-etc .node{ left:161px; top:51px; }
+  .anno-etc{ left:199px; top:455px; width:216px; }
+
+  /* ---- bottom-right: "not a studio" note widget ---- */
+  .note-widget{
+    position:absolute; right:44px; bottom:35px; z-index:5; width:224px;
+    border:1px solid var(--ink-line); background:rgba(255,255,255,0.8); backdrop-filter:blur(6px);
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .note-widget.hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
+  .note-head{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:6px 14px; border-bottom:1px solid var(--ink-line);
+    font-size:11px; letter-spacing:0.03em; color:var(--ink);
+  }
+  .note-close{ background:none; border:none; color:var(--ink-45); font-size:15px; line-height:1; cursor:pointer; }
+  .note-close:hover{ color:var(--ink); }
+  .note-body{ padding:14px; font-size:12px; line-height:1.2; color:var(--ink-70); }
+  .note-links{ display:flex; gap:8px; padding:0 14px 14px; }
+  .note-links a{
+    border:1px solid var(--ink-line); padding:6px 12px; font-size:11px;
+    color:var(--ink-70); text-decoration:none; transition:border-color .3s ease, color .3s ease;
+  }
+  .note-links a:hover{ border-color:var(--ink); color:var(--ink); }
+
+  /* ---------------- mobile ---------------- */
+  @media (max-width:640px){
+    .brand{ left:20px; top:70px; max-width:78%; }
+    .brand h1{ font-size:32px; }
+
+    .anno, .note-widget{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pin-wrap">
+  <div class="pin-inner">
+    <canvas id="brainCanvas"></canvas>
+    <div class="loading" id="loadingEl">LOADING BRAIN — 0%</div>
+
+    <div class="stage">
+      <div class="grid-lines" aria-hidden="true">
+        <span class="v-line" style="left:32%"></span>
+        <span class="v-line" style="left:68%"></span>
+        <span class="h-line" style="top:50%"></span>
+        <span class="cross" style="left:32%; top:50%"></span>
+        <span class="cross" style="left:68%; top:50%"></span>
+        <span class="cross" style="left:6%; top:96%"></span>
+        <span class="cross" style="left:94%; top:96%"></span>
+      </div>
+
+      <div class="brand">
+        <h1>디자인<br>연구실</h1>
+      </div>
+
+      <div class="anno anno-top">
+        <div class="anno-title">디자인 실험<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
+        <p class="anno-desc">주저없는 디자인을 실험하는 공간</p>
+      </div>
+
+      <div class="anno anno-right">
+        <div class="anno-title">스킬<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
+        <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
+      </div>
+
+      <div class="anno anno-etc">
+        <div class="anno-title">etc<span class="dogleg"><span class="diag"></span><span class="flat"></span><span class="node"></span></span></div>
+        <p class="anno-desc">디자인에 필요한 여러가지<br>디자인 스킬을 습득합니다.</p>
+      </div>
+
+      <div class="note-widget" id="noteWidget">
+        <div class="note-head">
+          <span>NOT A 스튜디오 — 그냥 저예요</span>
+          <button class="note-close" id="noteClose" aria-label="닫기">×</button>
+        </div>
+        <p class="note-body">
+          안녕하세요, 오세경입니다.<br>
+          BX 디자이너로 브랜드와 경험을 잇는 작업을 해요.<br>
+          이 사이트는 제가 만든 것들을 모아둔 공간이에요.
+        </p>
+        <div class="note-links">
+          <a href="mailto:osg497@gmail.com">EMAIL</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // safety net: if nothing has progressed past 0% after a few seconds,
+  // the module script itself likely failed to load (wrong path, or opened via
+  // file:// without a local server) — surface a clear message instead of a silent stall.
+  setTimeout(() => {
+    const el = document.getElementById('loadingEl');
+    if (el && el.textContent.includes('0%')) {
+      el.innerHTML = '모델이 로드되지 않았어요.<br>이 파일을 file://로 직접 열었다면 로컬 서버(또는 GitHub Pages)로 열어주세요.<br>콘솔(F12)에서 빨간 에러 메시지를 확인해주시면 정확한 원인을 알 수 있어요.';
+      el.style.lineHeight = '1.8';
+      el.style.textAlign = 'center';
+    }
+  }, 4000);
+
+  window.addEventListener('error', (e) => {
+    const el = document.getElementById('loadingEl');
+    if (el) el.innerHTML = `스크립트 에러: ${e.message || '알 수 없는 오류'}<br>콘솔(F12)을 확인해주세요.`;
+  });
+
+  // note widget close
+  const noteWidget = document.getElementById('noteWidget');
+  const noteClose = document.getElementById('noteClose');
+  noteClose?.addEventListener('click', () => {
+    noteWidget?.classList.add('hidden');
+  });
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+  import { initScene } from './scene.js';
+
+  const app = await initScene({
+    canvas: document.getElementById('brainCanvas'),
+    loadingEl: document.getElementById('loadingEl'),
+  }).catch((err) => {
+    console.error(err);
+    const el = document.getElementById('loadingEl');
+    if (el) el.textContent = '모델을 불러오지 못했어요 — 콘솔을 확인해주세요.';
+  });
+
+  if (app && app.brain && typeof app.brain.setPinProgress === 'function') {
+    // static hero, no scroll — just settle the brain into its resting pose
+    app.brain.setPinProgress(0);
+  }
+</script>
+</body>
+</html>
